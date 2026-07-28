@@ -416,22 +416,32 @@
         border: none;
         padding: 0;
         margin-bottom: 0;
+        break-inside: avoid;
+        page-break-inside: avoid;
       }
 
       .quartet-toolbar { display: none; }
 
       #printArea {
         display: grid;
-        grid-template-columns: repeat(3, 1fr);
-        gap: 10px;
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+        gap: 6mm;
         width: 100%;
+        align-items: start;
       }
 
       .cards-grid {
-        display: contents;
+        display: grid;
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+        gap: 3mm;
+        align-items: start;
       }
 
       .game-card {
+        width: 100%;
+        max-width: 6.2cm;
+        height: 9.2cm;
+        margin: 0 auto;
         box-shadow: none;
         border: 1px dashed #aaa;
       }
