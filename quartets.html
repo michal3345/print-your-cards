@@ -1,0 +1,869 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <title>יוצר משחק רביעיות אישי</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Assistant:wght@400;700&family=Heebo:wght@400;700&family=Rubik:wght@400;700&family=Varela+Round&display=swap" rel="stylesheet">
+
+  <style>
+    :root {
+      --primary: #4a90e2;
+      --bg: #f5f7fa;
+      --main-font: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    }
+
+    * {
+      box-sizing: border-box;
+      font-family: var(--main-font);
+    }
+
+    body {
+      background-color: var(--bg);
+      margin: 0;
+      padding: 20px;
+      color: #333;
+    }
+
+    .container {
+      max-width: 900px;
+      margin: 0 auto;
+    }
+
+    h1, h2, h3 {
+      text-align: center;
+      color: #2c3e50;
+    }
+
+    .creator-card {
+      background: white;
+      padding: 25px;
+      border-radius: 12px;
+      box-shadow: 0 4px 15px rgba(0,0,0,0.08);
+      margin-bottom: 30px;
+    }
+
+    .global-settings-box {
+      background: #f8fafc;
+      border: 2px solid #e2e8f0;
+      border-radius: 10px;
+      padding: 18px;
+      margin-bottom: 25px;
+    }
+
+    .global-settings-title {
+      font-weight: bold;
+      color: #1e293b;
+      margin-bottom: 15px;
+      font-size: 16px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .section-divider {
+      border: 0;
+      height: 1px;
+      background: #e2e8f0;
+      margin: 25px 0;
+    }
+
+    .form-group {
+      margin-bottom: 15px;
+    }
+
+    label {
+      display: block;
+      font-weight: bold;
+      margin-bottom: 5px;
+    }
+
+    input[type="text"], input[type="color"], select {
+      width: 100%;
+      padding: 10px;
+      border: 1px solid #ccc;
+      border-radius: 6px;
+      font-size: 15px;
+      background: white;
+    }
+
+    input[type="color"] {
+      height: 45px;
+      cursor: pointer;
+      padding: 2px;
+    }
+
+    .bulk-drop-zone {
+      border: 2px dashed var(--primary);
+      background: #f0f7ff;
+      border-radius: 8px;
+      padding: 20px;
+      text-align: center;
+      cursor: pointer;
+      margin-bottom: 20px;
+      transition: background 0.2s, border-color 0.2s;
+    }
+
+    .bulk-drop-zone.dragover {
+      background: #e1f0ff;
+      border-color: #2563eb;
+    }
+
+    .bulk-drop-zone p {
+      margin: 0;
+      font-weight: bold;
+      color: #2c3e50;
+    }
+
+    .bulk-drop-zone span {
+      font-size: 13px;
+      color: #666;
+    }
+
+    .items-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 15px;
+      margin-top: 15px;
+    }
+
+    .item-box {
+      background: #f9f9f9;
+      padding: 12px;
+      border-radius: 8px;
+      border: 1px dashed #bbb;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      transition: border-color 0.2s, background 0.2s;
+    }
+
+    .item-box.dragover {
+      border-color: var(--primary);
+      background: #eef6ff;
+    }
+
+    .item-box label {
+      font-size: 14px;
+    }
+
+    .image-preview-container {
+      width: 100%;
+      height: 120px;
+      background: #eee;
+      border-radius: 6px;
+      overflow: hidden;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border: 1px solid #ddd;
+      position: relative;
+      cursor: pointer;
+    }
+
+    .image-preview-container img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+
+    .image-preview-placeholder {
+      font-size: 12px;
+      color: #888;
+      text-align: center;
+      padding: 5px;
+    }
+
+    .btn-wrapper {
+      position: relative;
+      margin-top: 15px;
+    }
+
+    .btn {
+      background: #27ae60;
+      color: white;
+      border: none;
+      padding: 12px 24px;
+      font-size: 16px;
+      font-weight: bold;
+      border-radius: 6px;
+      cursor: pointer;
+      width: 100%;
+      transition: background 0.2s;
+    }
+
+    .btn:hover {
+      background: #219150;
+    }
+
+    .btn-edit-mode {
+      background: #e67e22;
+    }
+
+    .btn-edit-mode:hover {
+      background: #d35400;
+    }
+
+    .toast-popup {
+      position: absolute;
+      top: -45px;
+      left: 50%;
+      transform: translateX(-50%) scale(0.8);
+      background: #2c3e50;
+      color: white;
+      padding: 8px 16px;
+      border-radius: 20px;
+      font-size: 14px;
+      font-weight: bold;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+      opacity: 0;
+      pointer-events: none;
+      transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275), opacity 0.3s;
+      white-space: nowrap;
+      z-index: 10;
+    }
+
+    .toast-popup.error {
+      background: #e74c3c;
+    }
+
+    .toast-popup.show {
+      opacity: 1;
+      transform: translateX(-50%) scale(1);
+    }
+
+    .btn-print {
+      background: #2980b9;
+      margin-bottom: 20px;
+      margin-top: 20px;
+    }
+
+    .btn-print:hover {
+      background: #1c5980;
+    }
+
+    .quartet-group {
+      background: white;
+      border: 2px solid #ddd;
+      border-radius: 12px;
+      padding: 15px;
+      margin-bottom: 25px;
+      position: relative;
+    }
+
+    .quartet-toolbar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 12px;
+      padding-bottom: 8px;
+      border-bottom: 1px solid #eee;
+    }
+
+    .quartet-title {
+      font-weight: bold;
+      font-size: 16px;
+      color: #2c3e50;
+    }
+
+    .quartet-actions {
+      display: flex;
+      gap: 8px;
+    }
+
+    .btn-action {
+      border: none;
+      padding: 6px 12px;
+      border-radius: 4px;
+      cursor: pointer;
+      font-size: 13px;
+      font-weight: bold;
+      transition: opacity 0.2s;
+    }
+
+    .btn-action:hover {
+      opacity: 0.85;
+    }
+
+    .btn-edit {
+      background: #f39c12;
+      color: white;
+    }
+
+    .btn-delete {
+      background: #e74c3c;
+      color: white;
+    }
+
+    .cards-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 15px;
+      justify-content: center;
+    }
+
+    .game-card {
+      width: 6.2cm;
+      height: 9.2cm;
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.12);
+      margin: 0 auto;
+      page-break-inside: avoid;
+      border: 2px solid rgba(0,0,0,0.08);
+      position: relative;
+      -webkit-print-color-adjust: exact !important;
+      print-color-adjust: exact !important;
+    }
+
+    .corners-rounded .game-card {
+      border-radius: 12px;
+    }
+    .corners-sharp .game-card {
+      border-radius: 0px;
+    }
+
+    .card-header {
+      padding: 8px;
+      color: white;
+      text-align: center;
+      font-weight: bold;
+      font-size: 14px;
+      text-shadow: 0 1px 2px rgba(0,0,0,0.3);
+      letter-spacing: 0.5px;
+      -webkit-print-color-adjust: exact !important;
+      print-color-adjust: exact !important;
+    }
+
+    .card-image-wrapper {
+      padding: 8px 12px 0 12px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+
+    .card-image-container {
+      height: 3.6cm;
+      width: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      overflow: hidden;
+      background: rgba(255, 255, 255, 0.5);
+      box-shadow: inset 0 0 5px rgba(0,0,0,0.05);
+    }
+
+    .card-image-container img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+
+    .mask-rounded { border-radius: 14px; }
+    .mask-arch { border-radius: 50% 50% 12px 12px; }
+    .mask-ellipse { border-radius: 50%; width: 3.6cm; }
+    .mask-hexagon { clip-path: polygon(10% 0%, 90% 0%, 100% 50%, 90% 100%, 10% 100%, 0% 50%); }
+    .mask-diamond { clip-path: polygon(50% 0%, 100% 50%, 50% 100%, 0% 50%); }
+    .mask-shield { clip-path: polygon(0% 0%, 100% 0%, 100% 75%, 50% 100%, 0% 75%); }
+    .mask-feather {
+      border-radius: 12px;
+      mask-image: radial-gradient(circle, rgba(0,0,0,1) 60%, rgba(0,0,0,0) 100%);
+      -webkit-mask-image: radial-gradient(circle, rgba(0,0,0,1) 60%, rgba(0,0,0,0) 100%);
+    }
+    .mask-rough {
+      border-radius: 255px 15px 225px 15px/15px 225px 15px 255px;
+      border: 3px dashed rgba(0,0,0,0.2);
+    }
+    .mask-blob { border-radius: 60% 40% 30% 70% / 60% 30% 70% 40%; }
+
+    .card-list {
+      padding: 8px 12px;
+      flex-grow: 1;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-around;
+      font-size: 11px;
+    }
+
+    .card-list-item {
+      padding: 3px 6px;
+      border-radius: 6px;
+      color: #444;
+      background: rgba(255, 255, 255, 0.4);
+      border: 1px solid rgba(0,0,0,0.03);
+    }
+
+    .card-list-item.active {
+      font-weight: bold;
+      color: #000;
+      background: white;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.08);
+      border-right: 4px solid currentColor;
+    }
+
+    @media print {
+      * {
+        -webkit-print-color-adjust: exact !important;
+        print-color-adjust: exact !important;
+      }
+
+      body { background: white; padding: 0; }
+      .no-print { display: none !important; }
+
+      .quartet-group {
+        border: none;
+        padding: 0;
+        margin-bottom: 0;
+      }
+
+      .quartet-toolbar { display: none; }
+
+      #printArea {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 10px;
+        width: 100%;
+      }
+
+      .cards-grid {
+        display: contents;
+      }
+
+      .game-card {
+        box-shadow: none;
+        border: 1px dashed #aaa;
+      }
+
+      @page {
+        size: A4 portrait;
+        margin: 8mm;
+      }
+    }
+  </style>
+</head>
+<body>
+
+<div class="container">
+  <div class="no-print">
+    <h1>יוצר משחק רביעיות אישי</h1>
+    
+    <div class="creator-card" id="formCard">
+      
+      <div class="global-settings-box">
+        <div class="global-settings-title">⚙️ הגדרות גלובליות לכל הקלפים בדף</div>
+        
+        <div class="form-group">
+          <label for="fontSelect">פונט כללי למשחק:</label>
+          <select id="fontSelect" onchange="changeGlobalFont(this.value)">
+            <option value="system-ui, -apple-system, sans-serif">ברירת מחדל של המערכת</option>
+            <option value="'Assistant', sans-serif">Assistant (אסיסטנט)</option>
+            <option value="'Heebo', sans-serif">Heebo (היבו)</option>
+            <option value="'Rubik', sans-serif">Rubik (רוביק)</option>
+            <option value="'Varela Round', sans-serif">Varela Round (ורלה עגול)</option>
+            <option value="'Arial', sans-serif">Arial</option>
+          </select>
+        </div>
+
+        <div class="form-group" style="margin-bottom: 0;">
+          <label for="cardCorners">סגנון פינות לכל הקלפים:</label>
+          <select id="cardCorners" onchange="changeGlobalCorners(this.value)">
+            <option value="corners-rounded">פינות מעוגלות (קלאסי)</option>
+            <option value="corners-sharp">פינות שפיציות / ישרות</option>
+          </select>
+        </div>
+      </div>
+
+      <hr class="section-divider">
+
+      <h2 id="formTitle">הגדרת רביעייה</h2>
+
+      <div class="form-group">
+        <label for="categoryTitle">שם הקטגוריה:</label>
+        <input type="text" id="categoryTitle" placeholder="הכניסו את שם הקטגוריה">
+      </div>
+
+      <div class="form-group">
+        <label for="themeColor">צבע הקטגוריה:</label>
+        <input type="color" id="themeColor" value="#4a90e2">
+      </div>
+
+      <div class="form-group">
+        <label for="maskStyle">סגנון חיתוך ואפקטים לתמונה:</label>
+        <select id="maskStyle">
+          <optgroup label="חיתוכים וצורות">
+            <option value="mask-rounded">פינות מעוגלות רכות</option>
+            <option value="mask-arch">קשת מעוגלת</option>
+            <option value="mask-ellipse">אליפסה / עיגול</option>
+            <option value="mask-hexagon">משושה גיאומטרי</option>
+            <option value="mask-diamond">מעוין</option>
+            <option value="mask-shield">מגן / קלאסי</option>
+          </optgroup>
+          <optgroup label="אפקטים וקצוות מיוחדים">
+            <option value="mask-feather">קצוות מטושטשים / רכים (Feather)</option>
+            <option value="mask-rough">חיספוס וינטג' / מסגרת ידנית</option>
+            <option value="mask-blob">בועה דינמית</option>
+          </optgroup>
+        </select>
+      </div>
+
+      <div class="bulk-drop-zone" id="bulkDropZone" onclick="document.getElementById('bulkFileInput').click()">
+        <p>🖼️ גררו לכאן 4 תמונות בבת אחת (או לחצו לבחירה)</p>
+        <span>התמונות ישובצו אוטומטית בארבעת הקלפים</span>
+        <input type="file" id="bulkFileInput" accept="image/*" multiple style="display: none;">
+      </div>
+
+      <h3>4 הקלפים ברביעייה:</h3>
+      <div class="items-grid">
+        <div class="item-box" id="box1">
+          <label>קלף 1:</label>
+          <input type="text" id="item1" placeholder="שם המקום / פריט">
+          <div class="image-preview-container" id="preview1">
+            <span class="image-preview-placeholder">גררו תמונה לכאן</span>
+          </div>
+          <input type="file" accept="image/*" id="img1" style="display:none;">
+        </div>
+
+        <div class="item-box" id="box2">
+          <label>קלף 2:</label>
+          <input type="text" id="item2" placeholder="שם המקום / פריט">
+          <div class="image-preview-container" id="preview2">
+            <span class="image-preview-placeholder">גררו תמונה לכאן</span>
+          </div>
+          <input type="file" accept="image/*" id="img2" style="display:none;">
+        </div>
+
+        <div class="item-box" id="box3">
+          <label>קלף 3:</label>
+          <input type="text" id="item3" placeholder="שם המקום / פריט">
+          <div class="image-preview-container" id="preview3">
+            <span class="image-preview-placeholder">גררו תמונה לכאן</span>
+          </div>
+          <input type="file" accept="image/*" id="img3" style="display:none;">
+        </div>
+
+        <div class="item-box" id="box4">
+          <label>קלף 4:</label>
+          <input type="text" id="item4" placeholder="שם המקום / פריט">
+          <div class="image-preview-container" id="preview4">
+            <span class="image-preview-placeholder">גררו תמונה לכאן</span>
+          </div>
+          <input type="file" accept="image/*" id="img4" style="display:none;">
+        </div>
+      </div>
+
+      <div class="btn-wrapper">
+        <div class="toast-popup" id="toastPopup">✨ הרביעייה נוצרה בהצלחה!</div>
+        <button class="btn" id="submitBtn" onclick="saveQuartet()">הוסף רביעייה למשחק</button>
+      </div>
+    </div>
+
+    <button class="btn btn-print" onclick="window.print()">🖨️ הדפס / שמור כ-PDF</button>
+  </div>
+
+  <div id="printArea" class="corners-rounded">
+    <!-- הרביעיות יוצגו כאן -->
+  </div>
+</div>
+
+<script>
+  let loadedImages = ['', '', '', ''];
+  let quartetsList = []; 
+  let editingIndex = null; 
+
+  function getRandomColor() {
+    const letters = '0123456789ABCDEF';
+    let color = '#';
+    for (let i = 0; i < 6; i++) {
+      color += letters[Math.floor(Math.random() * 16)];
+    }
+    return color;
+  }
+
+  function changeGlobalFont(fontFamily) {
+    document.documentElement.style.setProperty('--main-font', fontFamily);
+  }
+
+  function changeGlobalCorners(cornerClass) {
+    const printArea = document.getElementById('printArea');
+    printArea.className = cornerClass;
+  }
+
+  function displayPreview(index, dataUrl) {
+    loadedImages[index] = dataUrl || '';
+    const previewContainer = document.getElementById(`preview${index + 1}`);
+    if (dataUrl) {
+      previewContainer.innerHTML = `<img src="${dataUrl}" alt="תמונה ${index + 1}">`;
+    } else {
+      previewContainer.innerHTML = `<span class="image-preview-placeholder">גררו תמונה לכאן</span>`;
+    }
+  }
+
+  function handleFiles(files) {
+    const imageFiles = Array.from(files).filter(f => f.type.startsWith('image/'));
+    imageFiles.slice(0, 4).forEach((file, idx) => {
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        displayPreview(idx, e.target.result);
+      };
+      reader.readAsDataURL(file);
+    });
+  }
+
+  const bulkZone = document.getElementById('bulkDropZone');
+  const bulkInput = document.getElementById('bulkFileInput');
+
+  ['dragenter', 'dragover'].forEach(eventName => {
+    bulkZone.addEventListener(eventName, (e) => {
+      e.preventDefault();
+      e.stopPropagation();
+      bulkZone.classList.add('dragover');
+    }, false);
+  });
+
+  ['dragleave', 'drop'].forEach(eventName => {
+    bulkZone.addEventListener(eventName, (e) => {
+      e.preventDefault();
+      e.stopPropagation();
+      bulkZone.classList.remove('dragover');
+    }, false);
+  });
+
+  bulkZone.addEventListener('drop', (e) => {
+    const dt = e.dataTransfer;
+    handleFiles(dt.files);
+  });
+
+  bulkInput.addEventListener('change', (e) => {
+    handleFiles(e.target.files);
+  });
+
+  for (let i = 1; i <= 4; i++) {
+    const box = document.getElementById(`box${i}`);
+    const index = i - 1;
+
+    ['dragenter', 'dragover'].forEach(eventName => {
+      box.addEventListener(eventName, (e) => {
+        e.preventDefault();
+        e.stopPropagation();
+        box.classList.add('dragover');
+      }, false);
+    });
+
+    ['dragleave', 'drop'].forEach(eventName => {
+      box.addEventListener(eventName, (e) => {
+        e.preventDefault();
+        e.stopPropagation();
+        box.classList.remove('dragover');
+      }, false);
+    });
+
+    box.addEventListener('drop', (e) => {
+      const dt = e.dataTransfer;
+      const files = dt.files;
+      if (files.length > 0 && files[0].type.startsWith('image/')) {
+        const reader = new FileReader();
+        reader.onload = (evt) => {
+          displayPreview(index, evt.target.result);
+        };
+        reader.readAsDataURL(files[0]);
+      }
+    });
+
+    document.getElementById(`preview${i}`).addEventListener('click', () => {
+      document.getElementById(`img${i}`).click();
+    });
+
+    document.getElementById(`img${i}`).addEventListener('change', (e) => {
+      if (e.target.files.length > 0) {
+        const reader = new FileReader();
+        reader.onload = (evt) => {
+          displayPreview(index, evt.target.result);
+        };
+        reader.readAsDataURL(e.target.files[0]);
+      }
+    });
+  }
+
+  function hexToLightRgba(hex, opacity = 0.12) {
+    let c = hex.replace('#', '');
+    if (c.length === 3) {
+      c = c.split('').map(char => char + char).join('');
+    }
+    const r = parseInt(c.substring(0, 2), 16) || 0;
+    const g = parseInt(c.substring(2, 4), 16) || 0;
+    const b = parseInt(c.substring(4, 6), 16) || 0;
+    return `rgba(${r}, ${g}, ${b}, ${opacity})`;
+  }
+
+  function triggerToast(message, isError = false) {
+    const toast = document.getElementById('toastPopup');
+    toast.textContent = message;
+    if (isError) {
+      toast.classList.add('error');
+    } else {
+      toast.classList.remove('error');
+    }
+    toast.classList.add('show');
+    setTimeout(() => {
+      toast.classList.remove('show');
+    }, 3000);
+  }
+
+  function saveQuartet() {
+    const title = document.getElementById('categoryTitle').value.trim();
+    const color = document.getElementById('themeColor').value.toLowerCase();
+    const maskStyle = document.getElementById('maskStyle').value;
+
+    if (!title) {
+      triggerToast('⚠️ נא להזין שם קטגוריה', true);
+      return;
+    }
+
+    const isColorDuplicate = quartetsList.some((q, idx) => {
+      if (editingIndex !== null && idx === editingIndex) return false;
+      return q.color.toLowerCase() === color;
+    });
+
+    if (isColorDuplicate) {
+      triggerToast('⚠️ צבע זה כבר נמצא בשימוש, יש לבחור צבע שונה!', true);
+      return;
+    }
+
+    const items = [
+      document.getElementById('item1').value.trim() || 'פריט 1',
+      document.getElementById('item2').value.trim() || 'פריט 2',
+      document.getElementById('item3').value.trim() || 'פריט 3',
+      document.getElementById('item4').value.trim() || 'פריט 4'
+    ];
+
+    const quartetData = {
+      title,
+      color,
+      maskStyle,
+      items,
+      images: [...loadedImages]
+    };
+
+    if (editingIndex !== null) {
+      quartetsList[editingIndex] = quartetData;
+      triggerToast('✨ הרביעייה עודכנה בהצלחה!');
+      resetForm();
+    } else {
+      quartetsList.push(quartetData);
+      triggerToast('✨ הרביעייה נוצרה בהצלחה!');
+      resetForm();
+    }
+
+    renderAllQuartets();
+  }
+
+  function resetForm() {
+    editingIndex = null;
+    document.getElementById('categoryTitle').value = '';
+    document.getElementById('themeColor').value = getRandomColor(); // הגרלת צבע רנדומלי במיאוס
+    for (let i = 1; i <= 4; i++) {
+      document.getElementById(`item${i}`).value = '';
+      displayPreview(i - 1, '');
+    }
+    const submitBtn = document.getElementById('submitBtn');
+    submitBtn.textContent = 'הוסף רביעייה למשחק';
+    submitBtn.classList.remove('btn-edit-mode');
+    document.getElementById('formTitle').textContent = 'הגדרת רביעייה';
+  }
+
+  function editQuartet(index) {
+    editingIndex = index;
+    const q = quartetsList[index];
+
+    document.getElementById('categoryTitle').value = q.title;
+    document.getElementById('themeColor').value = q.color;
+    document.getElementById('maskStyle').value = q.maskStyle;
+
+    for (let i = 0; i < 4; i++) {
+      document.getElementById(`item${i + 1}`).value = q.items[i];
+      displayPreview(i, q.images[i]);
+    }
+
+    const submitBtn = document.getElementById('submitBtn');
+    submitBtn.textContent = 'עדכן רביעייה';
+    submitBtn.classList.add('btn-edit-mode');
+    document.getElementById('formTitle').textContent = `עריכת רביעייה: ${q.title}`;
+
+    document.getElementById('formCard').scrollIntoView({ behavior: 'smooth' });
+  }
+
+  function deleteQuartet(index) {
+    if (confirm('האם למחוק את הרביעייה הזו?')) {
+      quartetsList.splice(index, 1);
+      if (editingIndex === index) {
+        resetForm();
+      }
+      renderAllQuartets();
+    }
+  }
+
+  function renderAllQuartets() {
+    const printArea = document.getElementById('printArea');
+    printArea.innerHTML = '';
+
+    quartetsList.forEach((q, qIndex) => {
+      const groupWrapper = document.createElement('div');
+      groupWrapper.className = 'quartet-group';
+
+      const cardBgColor = hexToLightRgba(q.color, 0.12);
+
+      let cardsHTML = '';
+      for (let i = 0; i < 4; i++) {
+        let listHTML = '';
+        q.items.forEach((itemText, index) => {
+          const isActive = index === i ? 'active' : '';
+          const activeStyle = index === i ? `style="border-right-color: ${q.color};"` : '';
+          listHTML += `<div class="card-list-item ${isActive}" ${activeStyle}>${index + 1}. ${itemText}</div>`;
+        });
+
+        const imgSrc = q.images[i] || 'data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="100" height="100" viewBox="0 0 24 24" fill="none" stroke="%23ccc" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><path d="M21 15l-5-5L5 21"/></svg>';
+
+        cardsHTML += `
+          <div class="game-card" style="background-color: ${cardBgColor};">
+            <div class="card-header" style="background-color: ${q.color};">
+              ${q.title}
+            </div>
+            <div class="card-image-wrapper">
+              <div class="card-image-container ${q.maskStyle}">
+                <img src="${imgSrc}" alt="${q.items[i]}">
+              </div>
+            </div>
+            <div class="card-list">
+              ${listHTML}
+            </div>
+          </div>
+        `;
+      }
+
+      groupWrapper.innerHTML = `
+        <div class="quartet-toolbar">
+          <div class="quartet-title">רביעייה: ${q.title}</div>
+          <div class="quartet-actions">
+            <button class="btn-action btn-edit" onclick="editQuartet(${qIndex})">✏️ ערוך</button>
+            <button class="btn-action btn-delete" onclick="deleteQuartet(${qIndex})">🗑️ מחק</button>
+          </div>
+        </div>
+        <div class="cards-grid">
+          ${cardsHTML}
+        </div>
+      `;
+
+      printArea.appendChild(groupWrapper);
+    });
+  }
+
+  // הגרלת צבע התחלתי בעת טעינת הדף
+  window.onload = function() {
+    document.getElementById('themeColor').value = getRandomColor();
+  };
+</script>
+
+</body>
+</html>

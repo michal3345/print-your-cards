@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>מחולל המשחקים שלי</title>
+  <style>
+    body {
+      font-family: system-ui, -apple-system, sans-serif;
+      background-color: #f4f7f6;
+      margin: 0;
+      padding: 40px 20px;
+      color: #333;
+    }
+    .container {
+      max-width: 800px;
+      margin: 0 auto;
+      text-align: center;
+    }
+    h1 {
+      color: #2c3e50;
+      margin-bottom: 10px;
+    }
+    p.subtitle {
+      color: #666;
+      margin-bottom: 30px;
+    }
+    .games-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 20px;
+    }
+    .card {
+      background: white;
+      border-radius: 12px;
+      padding: 25px;
+      text-decoration: none;
+      color: inherit;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+      transition: transform 0.2s, box-shadow 0.2s;
+      border: 1px solid #e1e8ed;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+    .card:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 8px 20px rgba(0,0,0,0.12);
+    }
+    .card-icon {
+      font-size: 40px;
+      margin-bottom: 15px;
+    }
+    .card-title {
+      font-size: 20px;
+      font-weight: bold;
+      color: #2b6cb0;
+      margin-bottom: 8px;
+    }
+    .card-desc {
+      font-size: 14px;
+      color: #666;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="container">
+    <h1>מחולל המשחקים להדפסה</h1>
+    <p class="subtitle">בחרו את המשחק שברצונכם ליצור ולעצב:</p>
+
+    <div class="games-grid">
+      <a href="quartets.html" class="card">
+        <div class="card-icon">🎴</div>
+        <div class="card-title">רביעיות</div>
+        <div class="card-desc">יוצר קלפי רביעיות אישיים</div>
+      </a>
+
+      <a href="dobble.html" class="card">
+        <div class="card-icon">🔍</div>
+        <div class="card-title">דאבל</div>
+        <div class="card-desc">יוצר משחק זיהוי מהיר</div>
+      </a>
+
+      <a href="bingo.html" class="card">
+        <div class="card-icon">🎰</div>
+        <div class="card-title">בינגו</div>
+        <div class="card-desc">מחולל לוחות בינגו מותאמים</div>
+      </a>
+
+      <a href="domino.html" class="card">
+        <div class="card-icon">🀄</div>
+        <div class="card-title">דומינו</div>
+        <div class="card-desc">יוצר אבני דומינו להדפסה</div>
+      </a>
+    </div>
+  </div>
+
+</body>
+</html>
