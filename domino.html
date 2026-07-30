@@ -1,441 +1,471 @@
 <!DOCTYPE html>
 <html lang="he" dir="rtl">
 <head>
-  <meta charset="UTF-8">
-  <title>מחולל משחק דומינו אישי</title>
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Assistant:wght@400;700&display=swap" rel="stylesheet">
+    <meta charset="UTF-8">
+    <title>מחולל משחק דומינו אישי</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Assistant:wght@400;700&display=swap" rel="stylesheet">
 
-  <style>
-    :root {
-      --primary: #27ae60;
-      --bg: #f5f7fa;
-      --main-font: 'Assistant', system-ui, -apple-system, sans-serif;
-      --divider-color: #2c3e50;
-    }
+    <style>
+        :root {
+            --primary: #27ae60;
+            --bg: #f5f7fa;
+            --main-font: 'Assistant', system-ui, -apple-system, sans-serif;
+            --divider-color: #2c3e50;
+        }
 
-    * {
-      box-sizing: border-box;
-      font-family: var(--main-font);
-    }
+        * {
+            box-sizing: border-box;
+            font-family: var(--main-font);
+        }
 
-    body {
-      background-color: var(--bg);
-      margin: 0;
-      padding: 20px;
-      color: #333;
-    }
+        body {
+            background-color: var(--bg);
+            margin: 0;
+            padding: 20px;
+            color: #333;
+        }
 
-    .container {
-      max-width: 900px;
-      margin: 0 auto;
-    }
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+        }
 
-    h1, h2, h3 {
-      text-align: center;
-      color: #2c3e50;
-    }
+        h1, h2, h3 {
+            text-align: center;
+            color: #2c3e50;
+        }
 
-    .creator-card {
-      background: white;
-      padding: 25px;
-      border-radius: 12px;
-      box-shadow: 0 4px 15px rgba(0,0,0,0.08);
-      margin-bottom: 30px;
-    }
+        .creator-card {
+            background: white;
+            padding: 25px;
+            border-radius: 12px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.08);
+            margin-bottom: 30px;
+        }
 
-    .divider-color-picker {
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      gap: 10px;
-      margin-bottom: 20px;
-      background: #f8fafc;
-      padding: 12px;
-      border-radius: 8px;
-      border: 1px solid #e2e8f0;
-    }
+        .divider-color-picker {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            margin-bottom: 20px;
+            background: #f8fafc;
+            padding: 12px;
+            border-radius: 8px;
+            border: 1px solid #e2e8f0;
+        }
 
-    .divider-color-picker label {
-      font-weight: bold;
-      margin: 0;
-    }
+            .divider-color-picker label {
+                font-weight: bold;
+                margin: 0;
+            }
 
-    .divider-color-picker input[type="color"] {
-      border: none;
-      width: 40px;
-      height: 40px;
-      cursor: pointer;
-      background: transparent;
-    }
+            .divider-color-picker input[type="color"] {
+                border: none;
+                width: 40px;
+                height: 40px;
+                cursor: pointer;
+                background: transparent;
+            }
 
-    .bulk-drop-zone {
-      border: 2px dashed var(--primary);
-      background: #f0fff4;
-      border-radius: 8px;
-      padding: 25px;
-      text-align: center;
-      cursor: pointer;
-      margin-bottom: 20px;
-      transition: background 0.2s, border-color 0.2s;
-    }
+        .bulk-drop-zone {
+            border: 2px dashed var(--primary);
+            background: #f0fff4;
+            border-radius: 8px;
+            padding: 25px;
+            text-align: center;
+            cursor: pointer;
+            margin-bottom: 20px;
+            transition: background 0.2s, border-color 0.2s;
+        }
 
-    .bulk-drop-zone:hover {
-      background: #dcffe4;
-      border-color: #219150;
-    }
+            .bulk-drop-zone:hover {
+                background: #dcffe4;
+                border-color: #219150;
+            }
 
-    .gallery-header {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      margin-top: 20px;
-      margin-bottom: 10px;
-    }
+        .gallery-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 20px;
+            margin-bottom: 10px;
+        }
 
-    .btn-danger-sm {
-      background: #e74c3c;
-      color: white;
-      border: none;
-      padding: 6px 12px;
-      border-radius: 4px;
-      cursor: pointer;
-      font-size: 14px;
-      font-weight: bold;
-    }
+        .btn-danger-sm {
+            background: #e74c3c;
+            color: white;
+            border: none;
+            padding: 6px 12px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: bold;
+        }
 
-    .btn-danger-sm:hover {
-      background: #c0392b;
-    }
+            .btn-danger-sm:hover {
+                background: #c0392b;
+            }
 
-    .images-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
-      gap: 12px;
-      margin-bottom: 20px;
-      min-height: 50px;
-    }
+        .images-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
+            gap: 12px;
+            margin-bottom: 20px;
+            min-height: 50px;
+        }
 
-    .img-thumb-container {
-      position: relative;
-      width: 100%;
-      height: 100px;
-      border-radius: 6px;
-      overflow: hidden;
-      border: 1px solid #ccc;
-      background: #eee;
-    }
+        .img-thumb-container {
+            position: relative;
+            width: 100%;
+            height: 100px;
+            border-radius: 6px;
+            overflow: hidden;
+            border: 1px solid #ccc;
+            background: #eee;
+        }
 
-    .img-thumb-container img {
-      width: 100%;
-      height: 100%;
-      object-fit: cover;
-    }
+            .img-thumb-container img {
+                width: 100%;
+                height: 100%;
+                object-fit: cover;
+            }
 
-    .delete-btn {
-      position: absolute;
-      top: 4px;
-      right: 4px;
-      background: rgba(231, 76, 60, 0.9);
-      color: white;
-      border: none;
-      border-radius: 50%;
-      width: 24px;
-      height: 24px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      cursor: pointer;
-      font-size: 12px;
-      box-shadow: 0 2px 4px rgba(0,0,0,0.2);
-    }
+        .delete-btn {
+            position: absolute;
+            top: 4px;
+            right: 4px;
+            background: rgba(231, 76, 60, 0.9);
+            color: white;
+            border: none;
+            border-radius: 50%;
+            width: 24px;
+            height: 24px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            font-size: 12px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+        }
 
-    .delete-btn:hover {
-      background: #c0392b;
-    }
+            .delete-btn:hover {
+                background: #c0392b;
+            }
 
-    .btn {
-      background: var(--primary);
-      color: white;
-      border: none;
-      padding: 12px 24px;
-      font-size: 16px;
-      font-weight: bold;
-      border-radius: 6px;
-      cursor: pointer;
-      width: 100%;
-      transition: background 0.2s;
-      margin-top: 10px;
-    }
+        .btn {
+            background: var(--primary);
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            font-size: 16px;
+            font-weight: bold;
+            border-radius: 6px;
+            cursor: pointer;
+            width: 100%;
+            transition: background 0.2s;
+            margin-top: 10px;
+        }
 
-    .btn:hover {
-      background: #219150;
-    }
+            .btn:hover {
+                background: #219150;
+            }
 
-    .btn-print {
-      background: #2980b9;
-      margin-bottom: 20px;
-    }
+        .btn-print {
+            background: #2980b9;
+            margin-bottom: 20px;
+        }
 
-    .btn-print:hover {
-      background: #1c5980;
-    }
+            .btn-print:hover {
+                background: #1c5980;
+            }
 
-    /* עיצוב אבני הדומינו */
-    .domino-grid {
-      display: grid;
-      grid-template-columns: repeat(2, 1fr);
-      gap: 15px;
-      justify-content: center;
-    }
+        /* עיצוב במסך */
+        .domino-grid {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 15px;
+            justify-content: center;
+            align-items: center;
+            margin: 0 auto;
+        }
 
-    .domino-card {
-      width: 12cm;
-      height: 5cm;
-      background: white;
-      border: 3px solid #2c3e50;
-      border-radius: 0px; /* קצוות שפיציים */
-      display: flex;
-      flex-direction: row;
-      position: relative;
-      margin: 0 auto 15px auto;
-      page-break-inside: avoid;
-      box-shadow: 0 4px 8px rgba(0,0,0,0.1);
-      -webkit-print-color-adjust: exact !important;
-      print-color-adjust: exact !important;
-    }
+        .domino-card {
+            width: 11cm;
+            height: 4.8cm;
+            background: white;
+            border: 3px solid #2c3e50;
+            border-radius: 0px;
+            display: flex;
+            flex-direction: row;
+            position: relative;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+            -webkit-print-color-adjust: exact !important;
+            print-color-adjust: exact !important;
+        }
 
-    .domino-half {
-      width: 50%;
-      height: 100%;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      padding: 8px;
-      overflow: hidden;
-    }
+        .domino-half {
+            width: 50%;
+            height: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 8px;
+            overflow: hidden;
+        }
 
-    .domino-divider {
-      width: 4px;
-      background-color: var(--divider-color);
-      height: 100%;
-    }
+        .domino-divider {
+            width: 4px;
+            background-color: var(--divider-color);
+            height: 100%;
+        }
 
-    .domino-half img {
-      max-width: 100%;
-      max-height: 100%;
-      object-fit: contain;
-    }
+        .domino-half img {
+            max-width: 100%;
+            max-height: 100%;
+            object-fit: contain;
+        }
 
-    /* אייקון מסתובב / ספינר טעינה */
-    .loading-overlay {
-      display: none;
-      position: fixed;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      background: rgba(255, 255, 255, 0.8);
-      z-index: 9999;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-    }
+        /* ספינר טעינה */
+        .loading-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(255, 255, 255, 0.85);
+            z-index: 9999;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+        }
 
-    .spinner {
-      width: 50px;
-      height: 50px;
-      border: 5px solid #f3f3f3;
-      border-top: 5px solid var(--primary);
-      border-radius: 50%;
-      animation: spin 1s linear infinite;
-    }
+        .spinner {
+            width: 50px;
+            height: 50px;
+            border: 5px solid #f3f3f3;
+            border-top: 5px solid var(--primary);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
 
-    @keyframes spin {
-      0% { transform: rotate(0deg); }
-      100% { transform: rotate(360deg); }
-    }
+        @keyframes spin {
+            0% {
+                transform: rotate(0deg);
+            }
 
-    @media print {
-      .no-print { display: none !important; }
-      body { background: white; padding: 0; }
-      
-      #printArea {
-        display: grid;
-        grid-template-columns: repeat(2, 1fr);
-        gap: 10px;
-        width: 100%;
-      }
+            100% {
+                transform: rotate(360deg);
+            }
+        }
 
-      .domino-card {
-        box-shadow: none;
-        border: 2px solid #000;
-        border-radius: 0px;
-      }
+        /* הגדרות הדפסה ומניעת חיתוך בשוליים */
+        @media print {
+            .no-print {
+                display: none !important;
+            }
 
-      @page {
-        size: A4 portrait;
-        margin: 10mm;
-      }
-    }
-  </style>
+            @page {
+                size: A4 portrait;
+                margin: 10mm; /* שוליים מוגדרים היטב */
+            }
+
+            html, body {
+                background: white !important;
+                margin: 0 !important;
+                padding: 0 !important;
+                width: 100% !important;
+            }
+
+            .container {
+                max-width: 100% !important;
+                width: 100% !important;
+                margin: 0 !important;
+                padding: 0 !important;
+            }
+
+            #printArea {
+                display: flex !important;
+                flex-wrap: wrap !important;
+                justify-content: center !important;
+                align-items: flex-start !important;
+                gap: 6mm !important;
+                width: 100% !important;
+                margin: 0 auto !important;
+                padding: 0 !important;
+            }
+
+            .domino-card {
+                box-shadow: none !important;
+                border: 2px solid #000 !important;
+                border-radius: 0px !important;
+                width: 8.8cm !important; /* רוחב מותאם שנכנס בבטחה ב-2 טורים בדף */
+                height: 4cm !important;
+                margin: 0 !important;
+                page-break-inside: avoid !important;
+                break-inside: avoid !important;
+            }
+        }
+    </style>
 </head>
 <body>
 
-<!-- ספינר טעינה -->
-<div class="loading-overlay" id="loadingOverlay">
-  <div class="spinner"></div>
-  <p style="margin-top: 15px; font-weight: bold; color: #2c3e50;" id="loadingText">מעבד...</p>
-</div>
-
-<div class="container">
-  <div class="no-print">
-    <h1>מחולל משחק דומינו אישי</h1>
-    
-    <div class="creator-card">
-      <div class="divider-color-picker">
-        <label for="dividerColor">צבע קו מפריד:</label>
-        <input type="color" id="dividerColor" value="#2c3e50" onchange="updateDividerColor(this.value)">
-      </div>
-
-      <div class="bulk-drop-zone" onclick="document.getElementById('bulkFileInput').click()">
-        <p style="margin: 0; font-size: 18px; font-weight: bold;">🖼️ טענו לכאן תמונות</p>
-        <span style="font-size: 14px; color: #666;">ניתן להעלות תמונות מרובות בלחיצות חוזרות</span>
-        <input type="file" id="bulkFileInput" accept="image/*" multiple style="display: none;" onchange="handleImagesUpload(event)">
-      </div>
-
-      <div class="gallery-header">
-        <h3 style="margin: 0;">הפריטים בדומינו:</h3>
-        <button class="btn-danger-sm" onclick="removeAllImages()">🗑️ הסר הכל</button>
-      </div>
-
-      <div class="images-grid" id="imagesGrid">
-        <!-- תמונות יופיעו כאן -->
-      </div>
-
-      <button class="btn" onclick="generateDominoGame()">✨ צור אבני דומינו</button>
+    <!-- ספינר טעינה -->
+    <div class="loading-overlay" id="loadingOverlay">
+        <div class="spinner"></div>
+        <p style="margin-top: 15px; font-weight: bold; color: #2c3e50;" id="loadingText">מעבד...</p>
     </div>
 
-    <button class="btn btn-print" onclick="printAndSave()">🖨️ הדפס / שמור כ-PDF</button>
-  </div>
+    <div class="container">
+        <div class="no-print">
+            <h1>מחולל משחק דומינו אישי</h1>
 
-  <div id="printArea" class="domino-grid">
-    <!-- אבני הדומינו יופיעו כאן -->
-  </div>
-</div>
+            <div class="creator-card">
+                <div class="divider-color-picker">
+                    <label for="dividerColor">צבע קו מפריד:</label>
+                    <input type="color" id="dividerColor" value="#2c3e50" onchange="updateDividerColor(this.value)">
+                </div>
 
-<script>
-  let loadedImages = [];
+                <div class="bulk-drop-zone" onclick="document.getElementById('bulkFileInput').click()">
+                    <p style="margin: 0; font-size: 18px; font-weight: bold;">🖼️ טענו לכאן תמונות</p>
+                    <span style="font-size: 14px; color: #666;">ניתן להעלות תמונות מרובות בלחיצות חוזרות</span>
+                    <input type="file" id="bulkFileInput" accept="image/*" multiple style="display: none;" onchange="handleImagesUpload(event)">
+                </div>
 
-  function showLoading(text) {
-    document.getElementById('loadingText').innerText = text;
-    document.getElementById('loadingOverlay').style.display = 'flex';
-  }
+                <div class="gallery-header">
+                    <h3 style="margin: 0;">הפריטים בדומינו:</h3>
+                    <button class="btn-danger-sm" onclick="removeAllImages()">🗑️ הסר הכל</button>
+                </div>
 
-  function hideLoading() {
-    document.getElementById('loadingOverlay').style.display = 'none';
-  }
+                <div class="images-grid" id="imagesGrid">
+                    <!-- תמונות יופיעו כאן -->
+                </div>
 
-  function updateDividerColor(color) {
-    document.documentElement.style.setProperty('--divider-color', color);
-  }
+                <button class="btn" onclick="generateDominoGame()">✨ צור אבני דומינו</button>
+            </div>
 
-  function handleImagesUpload(event) {
-    const files = Array.from(event.target.files).filter(f => f.type.startsWith('image/'));
-    if (files.length === 0) return;
+            <button class="btn btn-print" onclick="printAndSave()">🖨️ הדפס / שמור כ-PDF</button>
+        </div>
 
-    showLoading('מעלה תמונות...');
+        <div id="printArea" class="domino-grid">
+            <!-- אבני הדומינו יופיעו כאן -->
+        </div>
+    </div>
 
-    let loadedCount = 0;
-    files.forEach(file => {
-      const reader = new FileReader();
-      reader.onload = (e) => {
-        loadedImages.push(e.target.result);
-        loadedCount++;
-        if (loadedCount === files.length) {
-          renderImagesGrid();
-          hideLoading();
+    <script>
+        let loadedImages = [];
+
+        function showLoading(text) {
+            document.getElementById('loadingText').innerText = text;
+            document.getElementById('loadingOverlay').style.display = 'flex';
         }
-      };
-      reader.readAsDataURL(file);
-    });
 
-    event.target.value = '';
-  }
+        function hideLoading() {
+            document.getElementById('loadingOverlay').style.display = 'none';
+        }
 
-  function renderImagesGrid() {
-    const grid = document.getElementById('imagesGrid');
-    grid.innerHTML = '';
+        function updateDividerColor(color) {
+            document.documentElement.style.setProperty('--divider-color', color);
+        }
 
-    loadedImages.forEach((imgSrc, index) => {
-      const container = document.createElement('div');
-      container.className = 'img-thumb-container';
-      container.innerHTML = `
-        <img src="${imgSrc}">
-        <button class="delete-btn" title="הסר תמונה" onclick="removeImage(${index})">🗑️</button>
-      `;
-      grid.appendChild(container);
-    });
-  }
+        function handleImagesUpload(event) {
+            const files = Array.from(event.target.files).filter(f => f.type.startsWith('image/'));
+            if (files.length === 0) return;
 
-  function removeImage(index) {
-    loadedImages.splice(index, 1);
-    renderImagesGrid();
-  }
+            showLoading('מעלה תמונות...');
 
-  function removeAllImages() {
-    if (loadedImages.length === 0) return;
-    loadedImages = [];
-    renderImagesGrid();
-  }
+            let loadedCount = 0;
+            files.forEach(file => {
+                const reader = new FileReader();
+                reader.onload = (e) => {
+                    loadedImages.push(e.target.result);
+                    loadedCount++;
+                    if (loadedCount === files.length) {
+                        renderImagesGrid();
+                        hideLoading();
+                    }
+                };
+                reader.readAsDataURL(file);
+            });
 
-  function generateDominoGame() {
-    if (loadedImages.length < 2) {
-      alert('נא להעלות לפחות 2 תמונות כדי ליצור משחק דומינו');
-      return;
-    }
+            event.target.value = '';
+        }
 
-    showLoading('מייצר אבני דומינו...');
+        function renderImagesGrid() {
+            const grid = document.getElementById('imagesGrid');
+            grid.innerHTML = '';
 
-    setTimeout(() => {
-      const printArea = document.getElementById('printArea');
-      printArea.innerHTML = '';
-
-      for (let i = 0; i < loadedImages.length; i++) {
-        for (let j = i; j < loadedImages.length; j++) {
-          const card = document.createElement('div');
-          card.className = 'domino-card';
-
-          const imgA = loadedImages[i];
-          const imgB = loadedImages[j];
-
-          card.innerHTML = `
-            <div class="domino-half">
-              <img src="${imgA}">
-            </div>
-            <div class="domino-divider"></div>
-            <div class="domino-half">
-              <img src="${imgB}">
-            </div>
+            loadedImages.forEach((imgSrc, index) => {
+                const container = document.createElement('div');
+                container.className = 'img-thumb-container';
+                container.innerHTML = `
+            <img src="${imgSrc}">
+            <button class="delete-btn" title="הסר תמונה" onclick="removeImage(${index})">🗑️</button>
           `;
-
-          printArea.appendChild(card);
+                grid.appendChild(container);
+            });
         }
-      }
 
-      hideLoading();
-    }, 300);
-  }
+        function removeImage(index) {
+            loadedImages.splice(index, 1);
+            renderImagesGrid();
+        }
 
-  function printAndSave() {
-    showLoading('מכין להדפסה...');
-    setTimeout(() => {
-      hideLoading();
-      window.print();
-    }, 500);
-  }
-</script>
+        function removeAllImages() {
+            if (loadedImages.length === 0) return;
+            loadedImages = [];
+            renderImagesGrid();
+        }
+
+        function generateDominoGame() {
+            if (loadedImages.length < 2) {
+                alert('נא להעלות לפחות 2 תמונות כדי ליצור משחק דומינו');
+                return;
+            }
+
+            showLoading('מייצר אבני דומינו...');
+
+            setTimeout(() => {
+                const printArea = document.getElementById('printArea');
+                printArea.innerHTML = '';
+
+                for (let i = 0; i < loadedImages.length; i++) {
+                    for (let j = i; j < loadedImages.length; j++) {
+                        const card = document.createElement('div');
+                        card.className = 'domino-card';
+
+                        const imgA = loadedImages[i];
+                        const imgB = loadedImages[j];
+
+                        card.innerHTML = `
+                <div class="domino-half">
+                  <img src="${imgA}">
+                </div>
+                <div class="domino-divider"></div>
+                <div class="domino-half">
+                  <img src="${imgB}">
+                </div>
+              `;
+
+                        printArea.appendChild(card);
+                    }
+                }
+
+                hideLoading();
+            }, 300);
+        }
+
+        function printAndSave() {
+            showLoading('מכין להדפסה...');
+            setTimeout(() => {
+                hideLoading();
+                window.print();
+            }, 500);
+        }
+    </script>
 
 </body>
 </html>
