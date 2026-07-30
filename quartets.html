@@ -353,9 +353,9 @@
       justify-content: center;
     }
 
-    .game-card {
+        .game-card {
       width: 6.2cm;
-      height: 9.2cm;
+      height: 9.0cm;
       display: flex;
       flex-direction: column;
       overflow: hidden;
@@ -367,6 +367,7 @@
       -webkit-print-color-adjust: exact !important;
       print-color-adjust: exact !important;
     }
+
 
     .corners-rounded .game-card {
       border-radius: 12px;
@@ -471,32 +472,34 @@
 
       .quartet-toolbar { display: none !important; }
 
-      #printArea {
+            #printArea {
         display: grid;
         grid-template-columns: repeat(3, 1fr);
-        gap: 4mm;
+        gap: 3mm;
         padding: 0;
         width: 100%;
+        justify-items: center;
       }
 
       .cards-grid {
-        display: contents; /* Allows individual cards to align to the 3-column grid */
+        display: contents;
       }
 
       .game-card {
         width: 6.2cm;
-        height: 9.2cm;
-        margin: 0 auto;
+        height: 9.0cm;
+        margin: 0;
         box-shadow: none;
-        border: 0.1mm solid #ddd; /* Light cut line */
+        border: 0.1mm solid #ddd;
         page-break-inside: avoid;
         break-inside: avoid;
       }
 
       @page {
         size: A4 portrait;
-        margin: 10mm;
+        margin: 8mm;
       }
+
     }
 
   </style>
