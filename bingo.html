@@ -220,248 +220,295 @@
   </style>
 </head>
 <body>
+    <!-- כפתור חזרה לדף הבית - קוד עצמאי -->
+    <style>
+        .home-nav-btn {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            z-index: 9999;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            background-color: #ffffff;
+            color: #2c3e50;
+            text-decoration: none;
+            font-family: system-ui, -apple-system, sans-serif;
+            font-size: 15px;
+            font-weight: 700;
+            padding: 10px 18px;
+            border-radius: 30px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.15);
+            border: 1px solid #e2e8f0;
+            transition: all 0.25s ease;
+            cursor: pointer;
+        }
 
-<div id="loader">
-  <div class="spinner"></div>
-  <p style="font-weight: 700; margin-top: 15px;">יוצר את הקסם, רק רגע...</p>
-</div>
+            .home-nav-btn:hover {
+                transform: translateY(-2px);
+                box-shadow: 0 6px 20px rgba(0, 0, 0, 0.2);
+                background-color: #f8fafc;
+                color: #2b6cb0;
+            }
 
-<div class="container">
-  <header class="no-print">
-    <h1>🎲 מחולל הבינגו שלי</h1>
-    <p>צרו לוחות בינגו מעוצבים עם תמונות ומילים בתוך דקות</p>
-  </header>
+            .home-nav-btn .icon {
+                font-size: 18px;
+            }
 
-  <div class="setup-card no-print">
-    <div class="section-title">⚙️ הגדרות משחק</div>
-    <div class="grid-settings">
-      <div class="field">
-        <label>כותרת המשחק</label>
-        <input type="text" id="gameTitle" value="בינגו כיפי!">
-      </div>
-      <div class="field">
-        <label>גודל הלוח</label>
-        <select id="gridSize">
-          <option value="3">3x3</option>
-          <option value="4" selected>4x4</option>
-          <option value="5">5x5</option>
-        </select>
-      </div>
-      <div class="field">
-        <label>מספר לוחות</label>
-        <input type="number" id="boardCount" value="5" min="1">
-      </div>
+        /* הסתרת הכפתור בזמן הדפסה */
+        @media print {
+            .home-nav-btn {
+                display: none !important;
+            }
+        }
+    </style>
+
+    <a href="index.html" class="home-nav-btn" title="חזרה לדף המשחקים">
+        <span class="icon">🏠</span>
+        <span>למשחקים אחרים</span>
+    </a>
+
+    <div id="loader">
+        <div class="spinner"></div>
+        <p style="font-weight: 700; margin-top: 15px;">יוצר את הקסם, רק רגע...</p>
     </div>
 
-    <div class="section-title">🎨 עיצוב ונראות</div>
-    <div class="grid-settings">
-      <div class="field">
-        <label>צבע כותרת</label>
-        <div class="color-input-wrapper">
-          <input type="color" id="headerColor" value="#6c5ce7">
-          <span>בחר צבע</span>
+    <div class="container">
+        <header class="no-print">
+            <h1>🎲 מחולל הבינגו שלי</h1>
+            <p>צרו לוחות בינגו מעוצבים עם תמונות ומילים בתוך דקות</p>
+        </header>
+
+        <div class="setup-card no-print">
+            <div class="section-title">⚙️ הגדרות משחק</div>
+            <div class="grid-settings">
+                <div class="field">
+                    <label>כותרת המשחק</label>
+                    <input type="text" id="gameTitle" value="בינגו כיפי!">
+                </div>
+                <div class="field">
+                    <label>גודל הלוח</label>
+                    <select id="gridSize">
+                        <option value="3">3x3</option>
+                        <option value="4" selected>4x4</option>
+                        <option value="5">5x5</option>
+                    </select>
+                </div>
+                <div class="field">
+                    <label>מספר לוחות</label>
+                    <input type="number" id="boardCount" value="5" min="1">
+                </div>
+            </div>
+
+            <div class="section-title">🎨 עיצוב ונראות</div>
+            <div class="grid-settings">
+                <div class="field">
+                    <label>צבע כותרת</label>
+                    <div class="color-input-wrapper">
+                        <input type="color" id="headerColor" value="#6c5ce7">
+                        <span>בחר צבע</span>
+                    </div>
+                </div>
+                <div class="field">
+                    <label>צבע מילים</label>
+                    <div class="color-input-wrapper">
+                        <input type="color" id="wordColor" value="#2d3436" onchange="renderPreview()">
+                        <span>בחר צבע</span>
+                    </div>
+                </div>
+                <div class="field">
+                    <label>פונט</label>
+                    <select id="fontFamily" onchange="renderPreview()">
+                        <option value="'Assistant', sans-serif">Assistant</option>
+                        <option value="'Heebo', sans-serif">Heebo</option>
+                        <option value="'Varela Round', sans-serif">Varela Round</option>
+                        <option value="Arial">Arial</option>
+                    </select>
+                </div>
+                <div class="field">
+                    <label>רקע הלוח</label>
+                    <input type="file" id="bgInput" accept="image/*">
+                </div>
+            </div>
+
+            <div class="section-title">📝 תוכן</div>
+            <div class="field">
+                <label>הכנס מילים (מופרדות בפסיק):</label>
+                <div class="input-group">
+                    <input type="text" id="textInput" placeholder="שוקולד, עוגה, גלידה...">
+                    <button class="btn btn-accent" onclick="addWords()">➕ הוסף למאגר</button>
+                </div>
+            </div>
+
+            <div class="dropzone" onclick="document.getElementById('fileInput').click()">
+                <p style="font-weight: 700; color: var(--primary);">🖼️ לחצו כאן להעלאת תמונות</p>
+                <input type="file" id="fileInput" accept="image/*" multiple style="display: none;">
+            </div>
+
+            <div class="pool-container">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
+                    <label>מאגר: <span id="poolCounter" style="color: var(--primary);">0</span></label>
+                    <button class="btn-outline" style="padding: 5px 10px;" onclick="clearPool()">🗑️ נקה הכל</button>
+                </div>
+                <div id="poolPreview" class="items-grid"></div>
+            </div>
+
+            <div style="display: flex; gap: 15px; margin-top: 40px;">
+                <button class="btn btn-primary" style="flex: 2;" onclick="generate()">🎲 צור לוחות בינגו</button>
+                <button class="btn btn-outline" style="flex: 1;" onclick="window.print()">🖨️ הדפס / שמור ל-PDF</button>
+            </div>
         </div>
-      </div>
-      <div class="field">
-        <label>צבע מילים</label>
-        <div class="color-input-wrapper">
-          <input type="color" id="wordColor" value="#2d3436" onchange="renderPreview()">
-          <span>בחר צבע</span>
-        </div>
-      </div>
-      <div class="field">
-        <label>פונט</label>
-        <select id="fontFamily" onchange="renderPreview()">
-          <option value="'Assistant', sans-serif">Assistant</option>
-          <option value="'Heebo', sans-serif">Heebo</option>
-          <option value="'Varela Round', sans-serif">Varela Round</option>
-          <option value="Arial">Arial</option>
-        </select>
-      </div>
-      <div class="field">
-        <label>רקע הלוח</label>
-        <input type="file" id="bgInput" accept="image/*">
-      </div>
+
+        <div id="boardsOutput"></div>
+        <div id="callerOutput"></div>
     </div>
 
-    <div class="section-title">📝 תוכן</div>
-    <div class="field">
-      <label>הכנס מילים (מופרדות בפסיק):</label>
-      <div class="input-group">
-        <input type="text" id="textInput" placeholder="שוקולד, עוגה, גלידה...">
-        <button class="btn btn-accent" onclick="addWords()">➕ הוסף למאגר</button>
-      </div>
-    </div>
+    <script>
+        let pool = [];
+        let boardBg = null;
 
-    <div class="dropzone" onclick="document.getElementById('fileInput').click()">
-      <p style="font-weight: 700; color: var(--primary);">🖼️ לחצו כאן להעלאת תמונות</p>
-      <input type="file" id="fileInput" accept="image/*" multiple style="display: none;">
-    </div>
-
-    <div class="pool-container">
-      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
-        <label>מאגר: <span id="poolCounter" style="color: var(--primary);">0</span></label>
-        <button class="btn-outline" style="padding: 5px 10px;" onclick="clearPool()">🗑️ נקה הכל</button>
-      </div>
-      <div id="poolPreview" class="items-grid"></div>
-    </div>
-
-    <div style="display: flex; gap: 15px; margin-top: 40px;">
-      <button class="btn btn-primary" style="flex: 2;" onclick="generate()">🎲 צור לוחות בינגו</button>
-      <button class="btn btn-outline" style="flex: 1;" onclick="window.print()">🖨️ הדפס / שמור ל-PDF</button>
-    </div>
-  </div>
-
-  <div id="boardsOutput"></div>
-  <div id="callerOutput"></div>
-</div>
-
-<script>
-  let pool = [];
-  let boardBg = null;
-
-  document.getElementById('bgInput').addEventListener('change', e => {
-    const file = e.target.files[0];
-    if (file) {
-      const reader = new FileReader();
-      reader.onload = evt => boardBg = evt.target.result;
-      reader.readAsDataURL(file);
-    }
-  });
-
-  document.getElementById('fileInput').addEventListener('change', async e => {
-    const files = Array.from(e.target.files);
-    setLoading(true);
-    for (const file of files) {
-      const data = await toBase64(file);
-      pool.push({ type: 'img', value: data });
-    }
-    renderPreview();
-    setLoading(false);
-    e.target.value = '';
-  });
-
-  function addWords() {
-    const input = document.getElementById('textInput');
-    const words = input.value.split(/[,，\n]+/).map(w => w.trim()).filter(w => w);
-    words.forEach(w => pool.push({ type: 'text', value: w }));
-    input.value = '';
-    renderPreview();
-  }
-
-  function renderPreview() {
-    const container = document.getElementById('poolPreview');
-    const color = document.getElementById('wordColor').value;
-    const font = document.getElementById('fontFamily').value;
-    container.innerHTML = '';
-    pool.forEach((item, idx) => {
-      const div = document.createElement('div');
-      div.className = 'chip';
-      if (item.type === 'img') {
-        div.innerHTML = `<img src="${item.value}"> <span>תמונה</span>`;
-      } else {
-        div.innerHTML = `<span style="color:${color}; font-family:${font}; font-weight:700;">${item.value}</span>`;
-      }
-      const del = document.createElement('span');
-      del.className = 'remove';
-      del.innerHTML = ' ✕';
-      del.onclick = () => { pool.splice(idx, 1); renderPreview(); };
-      div.appendChild(del);
-      container.appendChild(div);
-    });
-    document.getElementById('poolCounter').textContent = pool.length;
-  }
-
-  function generate() {
-    const size = parseInt(document.getElementById('gridSize').value);
-    const count = parseInt(document.getElementById('boardCount').value);
-    const needed = size * size;
-
-    if (pool.length < needed) {
-      alert(`חסרים פריטים! צריך לפחות ${needed} (כרגע יש ${pool.length})`);
-      return;
-    }
-
-    setLoading(true);
-    setTimeout(() => {
-      const boardsOut = document.getElementById('boardsOutput');
-      const callerOut = document.getElementById('callerOutput');
-      const hColor = document.getElementById('headerColor').value;
-      const wColor = document.getElementById('wordColor').value;
-      const font = document.getElementById('fontFamily').value;
-      const title = document.getElementById('gameTitle').value;
-
-      boardsOut.innerHTML = '';
-      callerOut.innerHTML = '<h2 class="no-print" style="text-align:center; margin-top:50px;">📣 כרטיסי הגרלה</h2>';
-      
-      const callerGrid = document.createElement('div');
-      callerGrid.className = 'caller-grid';
-
-      for (let i = 0; i < count; i++) {
-        const board = document.createElement('div');
-        board.className = 'bingo-board';
-        if (boardBg) board.style.backgroundImage = `url(${boardBg})`;
-
-        const header = document.createElement('div');
-        header.className = 'board-header';
-        header.style.backgroundColor = hColor;
-        header.textContent = `${title} #${i + 1}`;
-
-        const grid = document.createElement('div');
-        grid.className = 'grid-table';
-        grid.style.gridTemplateColumns = `repeat(${size}, 1fr)`;
-
-        const shuffled = [...pool].sort(() => 0.5 - Math.random()).slice(0, needed);
-        shuffled.forEach(item => {
-          const cell = document.createElement('div');
-          cell.className = 'cell';
-          if (item.type === 'img') {
-            cell.innerHTML = `<img src="${item.value}">`;
-          } else {
-            cell.textContent = item.value;
-            cell.style.color = wColor;
-            cell.style.fontFamily = font;
-            cell.style.fontWeight = '800';
-            cell.style.fontSize = size > 4 ? '1.1rem' : '1.4rem';
-          }
-          grid.appendChild(cell);
+        document.getElementById('bgInput').addEventListener('change', e => {
+            const file = e.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = evt => boardBg = evt.target.result;
+                reader.readAsDataURL(file);
+            }
         });
 
-        board.appendChild(header);
-        board.appendChild(grid);
-        boardsOut.appendChild(board);
-      }
+        document.getElementById('fileInput').addEventListener('change', async e => {
+            const files = Array.from(e.target.files);
+            setLoading(true);
+            for (const file of files) {
+                const data = await toBase64(file);
+                pool.push({ type: 'img', value: data });
+            }
+            renderPreview();
+            setLoading(false);
+            e.target.value = '';
+        });
 
-      pool.forEach(item => {
-        const card = document.createElement('div');
-        card.className = 'caller-card';
-        if (item.type === 'img') {
-          card.innerHTML = `<img src="${item.value}">`;
-        } else {
-          card.textContent = item.value;
-          card.style.color = wColor;
-          card.style.fontFamily = font;
-          card.style.fontSize = '2rem';
-          card.style.fontWeight = '800';
+        function addWords() {
+            const input = document.getElementById('textInput');
+            const words = input.value.split(/[,，\n]+/).map(w => w.trim()).filter(w => w);
+            words.forEach(w => pool.push({ type: 'text', value: w }));
+            input.value = '';
+            renderPreview();
         }
-        callerGrid.appendChild(card);
-      });
-      
-      callerOut.appendChild(callerGrid);
-      setLoading(false);
-      boardsOut.scrollIntoView({ behavior: 'smooth' });
-    }, 300);
-  }
 
-  const toBase64 = file => new Promise((res) => {
-    const r = new FileReader();
-    r.readAsDataURL(file);
-    r.onload = () => res(r.result);
-  });
+        function renderPreview() {
+            const container = document.getElementById('poolPreview');
+            const color = document.getElementById('wordColor').value;
+            const font = document.getElementById('fontFamily').value;
+            container.innerHTML = '';
+            pool.forEach((item, idx) => {
+                const div = document.createElement('div');
+                div.className = 'chip';
+                if (item.type === 'img') {
+                    div.innerHTML = `<img src="${item.value}"> <span>תמונה</span>`;
+                } else {
+                    div.innerHTML = `<span style="color:${color}; font-family:${font}; font-weight:700;">${item.value}</span>`;
+                }
+                const del = document.createElement('span');
+                del.className = 'remove';
+                del.innerHTML = ' ✕';
+                del.onclick = () => { pool.splice(idx, 1); renderPreview(); };
+                div.appendChild(del);
+                container.appendChild(div);
+            });
+            document.getElementById('poolCounter').textContent = pool.length;
+        }
 
-  function setLoading(s) { document.getElementById('loader').style.display = s ? 'flex' : 'none'; }
-  function clearPool() { if(confirm("למחוק הכל?")) { pool = []; renderPreview(); } }
-</script>
+        function generate() {
+            const size = parseInt(document.getElementById('gridSize').value);
+            const count = parseInt(document.getElementById('boardCount').value);
+            const needed = size * size;
+
+            if (pool.length < needed) {
+                alert(`חסרים פריטים! צריך לפחות ${needed} (כרגע יש ${pool.length})`);
+                return;
+            }
+
+            setLoading(true);
+            setTimeout(() => {
+                const boardsOut = document.getElementById('boardsOutput');
+                const callerOut = document.getElementById('callerOutput');
+                const hColor = document.getElementById('headerColor').value;
+                const wColor = document.getElementById('wordColor').value;
+                const font = document.getElementById('fontFamily').value;
+                const title = document.getElementById('gameTitle').value;
+
+                boardsOut.innerHTML = '';
+                callerOut.innerHTML = '<h2 class="no-print" style="text-align:center; margin-top:50px;">📣 כרטיסי הגרלה</h2>';
+
+                const callerGrid = document.createElement('div');
+                callerGrid.className = 'caller-grid';
+
+                for (let i = 0; i < count; i++) {
+                    const board = document.createElement('div');
+                    board.className = 'bingo-board';
+                    if (boardBg) board.style.backgroundImage = `url(${boardBg})`;
+
+                    const header = document.createElement('div');
+                    header.className = 'board-header';
+                    header.style.backgroundColor = hColor;
+                    header.textContent = `${title} #${i + 1}`;
+
+                    const grid = document.createElement('div');
+                    grid.className = 'grid-table';
+                    grid.style.gridTemplateColumns = `repeat(${size}, 1fr)`;
+
+                    const shuffled = [...pool].sort(() => 0.5 - Math.random()).slice(0, needed);
+                    shuffled.forEach(item => {
+                        const cell = document.createElement('div');
+                        cell.className = 'cell';
+                        if (item.type === 'img') {
+                            cell.innerHTML = `<img src="${item.value}">`;
+                        } else {
+                            cell.textContent = item.value;
+                            cell.style.color = wColor;
+                            cell.style.fontFamily = font;
+                            cell.style.fontWeight = '800';
+                            cell.style.fontSize = size > 4 ? '1.1rem' : '1.4rem';
+                        }
+                        grid.appendChild(cell);
+                    });
+
+                    board.appendChild(header);
+                    board.appendChild(grid);
+                    boardsOut.appendChild(board);
+                }
+
+                pool.forEach(item => {
+                    const card = document.createElement('div');
+                    card.className = 'caller-card';
+                    if (item.type === 'img') {
+                        card.innerHTML = `<img src="${item.value}">`;
+                    } else {
+                        card.textContent = item.value;
+                        card.style.color = wColor;
+                        card.style.fontFamily = font;
+                        card.style.fontSize = '2rem';
+                        card.style.fontWeight = '800';
+                    }
+                    callerGrid.appendChild(card);
+                });
+
+                callerOut.appendChild(callerGrid);
+                setLoading(false);
+                boardsOut.scrollIntoView({ behavior: 'smooth' });
+            }, 300);
+        }
+
+        const toBase64 = file => new Promise((res) => {
+            const r = new FileReader();
+            r.readAsDataURL(file);
+            r.onload = () => res(r.result);
+        });
+
+        function setLoading(s) { document.getElementById('loader').style.display = s ? 'flex' : 'none'; }
+        function clearPool() { if (confirm("למחוק הכל?")) { pool = []; renderPreview(); } }
+    </script>
 
 </body>
 </html>

@@ -436,409 +436,456 @@
   </style>
 </head>
 <body>
+    <!-- כפתור חזרה לדף הבית - קוד עצמאי -->
+    <style>
+        .home-nav-btn {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            z-index: 9999;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            background-color: #ffffff;
+            color: #2c3e50;
+            text-decoration: none;
+            font-family: system-ui, -apple-system, sans-serif;
+            font-size: 15px;
+            font-weight: 700;
+            padding: 10px 18px;
+            border-radius: 30px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.15);
+            border: 1px solid #e2e8f0;
+            transition: all 0.25s ease;
+            cursor: pointer;
+        }
 
-<div class="toast-container" id="toastContainer"></div>
+            .home-nav-btn:hover {
+                transform: translateY(-2px);
+                box-shadow: 0 6px 20px rgba(0, 0, 0, 0.2);
+                background-color: #f8fafc;
+                color: #2b6cb0;
+            }
 
-<div class="container">
-    <div class="no-print">
-    <h1>🎯 דאבל!</h1>
+            .home-nav-btn .icon {
+                font-size: 18px;
+            }
 
-    <div class="app-layout">
-      <!-- Main Creator Card -->
-      <div class="creator-card">
-        <div class="settings-grid">
-          <div class="form-group">
-            <label for="cardShape">צורת הקלף:</label>
-            <select id="cardShape">
-              <option value="shape-circle">עיגול (קלאסי)</option>
-              <option value="shape-square">ריבוע</option>
-              <option value="shape-rectangle">מלבן</option>
-            </select>
-          </div>
+        /* הסתרת הכפתור בזמן הדפסה */
+        @media print {
+            .home-nav-btn {
+                display: none !important;
+            }
+        }
+    </style>
 
-          <div class="form-group">
-            <label for="cardBgColor">צבע הקלף (רקע):</label>
-            <input type="color" id="cardBgColor" value="#ffffff">
-          </div>
+    <a href="index.html" class="home-nav-btn" title="חזרה לדף המשחקים">
+        <span class="icon">🏠</span>
+        <span>למשחקים אחרים</span>
+    </a>
 
-          <div class="form-group">
-            <label for="borderColor">צבע המסגרת:</label>
-            <input type="color" id="borderColor" value="#2d3436">
-          </div>
+    <div class="toast-container" id="toastContainer"></div>
 
-                    <div class="form-group">
-            <label for="maskStyle">מסיכה / חיתוך לאיורים:</label>
-            <select id="maskStyle">
-              <option value="mask-none">ללא חיתוך (מומלץ לתמונות ללא רקע בסיומת PNG)</option>
-              <option value="mask-circle">עיגול</option>
-              <option value="mask-rounded">פינות מעוגלות</option>
-              <option value="mask-hexagon">משושה</option>
-              <option value="mask-diamond">מעוין</option>
-              <option value="mask-star">כוכב</option>
-              <option value="mask-soft">גבולות רכים</option>
-            </select>
-          </div>
+    <div class="container">
+        <div class="no-print">
+            <h1>🎯 דאבל!</h1>
+
+            <div class="app-layout">
+                <!-- Main Creator Card -->
+                <div class="creator-card">
+                    <div class="settings-grid">
+                        <div class="form-group">
+                            <label for="cardShape">צורת הקלף:</label>
+                            <select id="cardShape">
+                                <option value="shape-circle">עיגול (קלאסי)</option>
+                                <option value="shape-square">ריבוע</option>
+                                <option value="shape-rectangle">מלבן</option>
+                            </select>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="cardBgColor">צבע הקלף (רקע):</label>
+                            <input type="color" id="cardBgColor" value="#ffffff">
+                        </div>
+
+                        <div class="form-group">
+                            <label for="borderColor">צבע המסגרת:</label>
+                            <input type="color" id="borderColor" value="#2d3436">
+                        </div>
+
+                        <div class="form-group">
+                            <label for="maskStyle">מסיכה / חיתוך לאיורים:</label>
+                            <select id="maskStyle">
+                                <option value="mask-none">ללא חיתוך (מומלץ לתמונות ללא רקע בסיומת PNG)</option>
+                                <option value="mask-circle">עיגול</option>
+                                <option value="mask-rounded">פינות מעוגלות</option>
+                                <option value="mask-hexagon">משושה</option>
+                                <option value="mask-diamond">מעוין</option>
+                                <option value="mask-star">כוכב</option>
+                                <option value="mask-soft">גבולות רכים</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="bg-upload-container">
+                        <label for="bgFileInput">🖼️ העלאת רקע לקלפים (אופציונלי):</label>
+                        <input type="file" id="bgFileInput" accept="image/*">
+                        <span class="bg-warning">💡 המלצה: לא כדאי לבחור רקע מקושקש מדי כדי שהאיורים יישארו בולטים.</span>
+                    </div>
+
+                    <div class="bulk-drop-zone spin-on-hover" id="bulkDropZone" onclick="document.getElementById('bulkFileInput').click()">
+                        <p><i class="fas fa-cloud-upload-alt"></i> לחצו כאן או גררו תמונות להוספה</p>
+                        <span>ניתן להעלות תמונות בודדות או בבת אחת</span>
+                        <input type="file" id="bulkFileInput" accept="image/*" multiple style="display: none;">
+                    </div>
+
+                    <div class="images-list-header">
+                        <label>רשימת התמונות שהועלו:</label>
+                        <div class="images-counter" id="imagesCounter">0 תמונות</div>
+                    </div>
+
+                    <div class="images-grid" id="imagesGrid"></div>
+
+                    <div class="actions-bar">
+                        <button class="btn spin-on-hover" onclick="processAndGenerate()"><i class="fas fa-cog"></i> צור קלפי דאבל</button>
+                        <button class="btn btn-reset" onclick="resetGame()">🔄 משחק חדש</button>
+                    </div>
+                </div>
+
+                <!-- Math Explanation Panel -->
+                <div class="math-panel">
+                    <h3>📐 איך עובדת המתמטיקה?</h3>
+                    <p>משחק דאבל מבוסס על מבנה גאומטרי שנקרא <strong>מישור פרויקטיבי סופי</strong> בסדר $n$. הנוסחה מבטיחה שבדיוק איור אחד יהיה משותף בין כל שני קלפים!</p>
+
+                    <table class="math-table">
+                        <thead>
+                            <tr>
+                                <th>תמונות במאגר</th>
+                                <th>איורים בקלף</th>
+                                <th>סה"כ קלפים</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td><strong>7</strong></td>
+                                <td>3</td>
+                                <td>7</td>
+                            </tr>
+                            <tr>
+                                <td><strong>13</strong></td>
+                                <td>4</td>
+                                <td>13</td>
+                            </tr>
+                            <tr>
+                                <td><strong>31</strong></td>
+                                <td>6</td>
+                                <td>31</td>
+                            </tr>
+                            <tr>
+                                <td><strong>57</strong></td>
+                                <td>8</td>
+                                <td>57 (55 מודפסים)</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <button class="btn btn-print spin-on-hover" onclick="window.print()"><i class="fas fa-file-pdf"></i> הדפס / שמור כ-PDF</button>
         </div>
 
-        <div class="bg-upload-container">
-          <label for="bgFileInput">🖼️ העלאת רקע לקלפים (אופציונלי):</label>
-          <input type="file" id="bgFileInput" accept="image/*">
-          <span class="bg-warning">💡 המלצה: לא כדאי לבחור רקע מקושקש מדי כדי שהאיורים יישארו בולטים.</span>
-        </div>
+        <div class="info-summary" id="infoSummary"></div>
 
-        <div class="bulk-drop-zone spin-on-hover" id="bulkDropZone" onclick="document.getElementById('bulkFileInput').click()">
-          <p><i class="fas fa-cloud-upload-alt"></i> לחצו כאן או גררו תמונות להוספה</p>
-          <span>ניתן להעלות תמונות בודדות או בבת אחת</span>
-          <input type="file" id="bulkFileInput" accept="image/*" multiple style="display: none;">
-        </div>
-
-        <div class="images-list-header">
-          <label>רשימת התמונות שהועלו:</label>
-          <div class="images-counter" id="imagesCounter">0 תמונות</div>
-        </div>
-
-        <div class="images-grid" id="imagesGrid"></div>
-
-                <div class="actions-bar">
-          <button class="btn spin-on-hover" onclick="processAndGenerate()"><i class="fas fa-cog"></i> צור קלפי דאבל</button>
-          <button class="btn btn-reset" onclick="resetGame()">🔄 משחק חדש</button>
-        </div>
-      </div>
-
-      <!-- Math Explanation Panel -->
-      <div class="math-panel">
-        <h3>📐 איך עובדת המתמטיקה?</h3>
-        <p>משחק דאבל מבוסס על מבנה גאומטרי שנקרא <strong>מישור פרויקטיבי סופי</strong> בסדר $n$. הנוסחה מבטיחה שבדיוק איור אחד יהיה משותף בין כל שני קלפים!</p>
-        
-        <table class="math-table">
-          <thead>
-            <tr>
-              <th>תמונות במאגר</th>
-              <th>איורים בקלף</th>
-              <th>סה"כ קלפים</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr>
-              <td><strong>7</strong></td>
-              <td>3</td>
-              <td>7</td>
-            </tr>
-            <tr>
-              <td><strong>13</strong></td>
-              <td>4</td>
-              <td>13</td>
-            </tr>
-            <tr>
-              <td><strong>31</strong></td>
-              <td>6</td>
-              <td>31</td>
-            </tr>
-            <tr>
-              <td><strong>57</strong></td>
-              <td>8</td>
-              <td>57 (55 מודפסים)</td>
-            </tr>
-          </tbody>
-        </table>
-      </div>
+        <div id="deckArea" class="deck-grid"></div>
     </div>
 
-        <button class="btn btn-print spin-on-hover" onclick="window.print()"><i class="fas fa-file-pdf"></i> הדפס / שמור כ-PDF</button>
-  </div>
+    <!-- Loader Overlay -->
+    <div class="loader-overlay" id="loader">
+        <div class="spinner"></div>
+        <div class="loader-text" id="loaderText">מחשב צירופים ומייצר קלפים... 🎯</div>
+    </div>
 
-  <div class="info-summary" id="infoSummary"></div>
+    <script>
+        let uploadedFilesData = [];
+        let cardBackgroundSrc = null;
 
-  <div id="deckArea" class="deck-grid"></div>
-</div>
+        const dropZone = document.getElementById('bulkDropZone');
+        const fileInput = document.getElementById('bulkFileInput');
+        const bgFileInput = document.getElementById('bgFileInput');
 
-<!-- Loader Overlay -->
-<div class="loader-overlay" id="loader">
-  <div class="spinner"></div>
-  <div class="loader-text" id="loaderText">מחשב צירופים ומייצר קלפים... 🎯</div>
-</div>
-
-<script>
-  let uploadedFilesData = [];
-  let cardBackgroundSrc = null;
-
-  const dropZone = document.getElementById('bulkDropZone');
-  const fileInput = document.getElementById('bulkFileInput');
-  const bgFileInput = document.getElementById('bgFileInput');
-
-  bgFileInput.addEventListener('change', (e) => {
-    const file = e.target.files[0];
-    if (file && file.type.startsWith('image/')) {
-      const reader = new FileReader();
-      reader.onload = (ev) => {
-        cardBackgroundSrc = ev.target.result;
-        showToast('רקע הקלפים עודכן!', 'success');
-      };
-      reader.readAsDataURL(file);
-    }
-  });
-
-  function showToast(message, type = 'info') {
-    const container = document.getElementById('toastContainer');
-    const toast = document.createElement('div');
-    toast.className = `toast ${type} show`;
-    toast.textContent = message;
-    container.appendChild(toast);
-
-    setTimeout(() => {
-      toast.classList.remove('show');
-      setTimeout(() => toast.remove(), 300);
-    }, 3500);
-  }
-
-  ['dragenter', 'dragover'].forEach(name => {
-    dropZone.addEventListener(name, (e) => { e.preventDefault(); dropZone.classList.add('dragover'); });
-  });
-
-  ['dragleave', 'drop'].forEach(name => {
-    dropZone.addEventListener(name, (e) => { e.preventDefault(); dropZone.classList.remove('dragover'); });
-  });
-
-  dropZone.addEventListener('drop', (e) => handleFiles(e.dataTransfer.files));
-  fileInput.addEventListener('change', (e) => handleFiles(e.target.files));
-
-  function handleFiles(files) {
-    const validFiles = Array.from(files).filter(f => f.type.startsWith('image/'));
-    if (validFiles.length === 0) {
-      showToast('נא לבחור קבצי תמונה בלבד', 'error');
-      return;
-    }
-
-    showLoader(true, 'מעלה ומעבד תמונות... 🎯');
-
-    let loadedInBatch = 0;
-    validFiles.forEach((file) => {
-      const reader = new FileReader();
-      reader.onload = (e) => {
-        uploadedFilesData.push({
-          id: Date.now() + Math.random(),
-          name: file.name,
-          src: e.target.result
+        bgFileInput.addEventListener('change', (e) => {
+            const file = e.target.files[0];
+            if (file && file.type.startsWith('image/')) {
+                const reader = new FileReader();
+                reader.onload = (ev) => {
+                    cardBackgroundSrc = ev.target.result;
+                    showToast('רקע הקלפים עודכן!', 'success');
+                };
+                reader.readAsDataURL(file);
+            }
         });
-        loadedInBatch++;
-        if (loadedInBatch === validFiles.length) {
-          updateImagesUI();
-          showLoader(false);
-          showToast(`נוספו ${validFiles.length} תמונות בהצלחה!`, 'success');
+
+        function showToast(message, type = 'info') {
+            const container = document.getElementById('toastContainer');
+            const toast = document.createElement('div');
+            toast.className = `toast ${type} show`;
+            toast.textContent = message;
+            container.appendChild(toast);
+
+            setTimeout(() => {
+                toast.classList.remove('show');
+                setTimeout(() => toast.remove(), 300);
+            }, 3500);
         }
-      };
-      reader.readAsDataURL(file);
-    });
 
-    fileInput.value = '';
-  }
+        ['dragenter', 'dragover'].forEach(name => {
+            dropZone.addEventListener(name, (e) => { e.preventDefault(); dropZone.classList.add('dragover'); });
+        });
 
-  function updateImagesUI() {
-    const grid = document.getElementById('imagesGrid');
-    const counter = document.getElementById('imagesCounter');
-    grid.innerHTML = '';
-    counter.textContent = `${uploadedFilesData.length} תמונות הועלו`;
+        ['dragleave', 'drop'].forEach(name => {
+            dropZone.addEventListener(name, (e) => { e.preventDefault(); dropZone.classList.remove('dragover'); });
+        });
 
-    uploadedFilesData.forEach((item) => {
-      const card = document.createElement('div');
-      card.className = 'image-item';
-      card.innerHTML = `
-        <img src="${item.src}" class="image-item-preview" alt="preview">
-        <span class="image-item-name" title="${item.name}">${item.name}</span>
-        <button class="btn-remove-img" onclick="removeImage('${item.id}')" title="הסר תמונה">🗑️</button>
-      `;
-      grid.appendChild(card);
-    });
-  }
+        dropZone.addEventListener('drop', (e) => handleFiles(e.dataTransfer.files));
+        fileInput.addEventListener('change', (e) => handleFiles(e.target.files));
 
-  function removeImage(id) {
-    uploadedFilesData = uploadedFilesData.filter(item => item.id.toString() !== id.toString());
-    updateImagesUI();
-    showToast('התמונה הוסרה', 'info');
-  }
+        function handleFiles(files) {
+            const validFiles = Array.from(files).filter(f => f.type.startsWith('image/'));
+            if (validFiles.length === 0) {
+                showToast('נא לבחור קבצי תמונה בלבד', 'error');
+                return;
+            }
 
-    function resetGame() {
-    uploadedFilesData = [];
-    cardBackgroundSrc = null;
-    document.getElementById('bgFileInput').value = '';
-    updateImagesUI();
-    document.getElementById('deckArea').innerHTML = '';
-    document.getElementById('infoSummary').style.display = 'none';
-    showToast('המשחק אופס בהצלחה! ניתן להתחיל מחדש', 'info');
-  }
+            showLoader(true, 'מעלה ומעבד תמונות... 🎯');
 
-  function showLoader(show, message = 'מחשב צירופים ומייצר קלפים... 🎯') {
-    const loader = document.getElementById('loader');
-    const loaderText = document.getElementById('loaderText');
-    loaderText.textContent = message;
-    loader.style.display = show ? 'flex' : 'none';
-  }
+            let loadedInBatch = 0;
+            validFiles.forEach((file) => {
+                const reader = new FileReader();
+                reader.onload = (e) => {
+                    uploadedFilesData.push({
+                        id: Date.now() + Math.random(),
+                        name: file.name,
+                        src: e.target.result
+                    });
+                    loadedInBatch++;
+                    if (loadedInBatch === validFiles.length) {
+                        updateImagesUI();
+                        showLoader(false);
+                        showToast(`נוספו ${validFiles.length} תמונות בהצלחה!`, 'success');
+                    }
+                };
+                reader.readAsDataURL(file);
+            });
 
-  function getOrderN(totalImages) {
-    if (totalImages >= 57) return 7;
-    if (totalImages >= 31) return 5;
-    if (totalImages >= 13) return 3;
-    if (totalImages >= 7) return 2;
-    return 0;
-  }
-
-  function generateProjectivePlaneIndexes(n) {
-    let cards = [];
-    let firstCard = [0];
-    for (let i = 0; i < n; i++) firstCard.push(i + 1);
-    cards.push(firstCard);
-
-    for (let j = 0; j < n; j++) {
-      let card = [0];
-      for (let k = 0; k < n; k++) card.push((n + 1) + j * n + k);
-      cards.push(card);
-    }
-
-    for (let i = 0; i < n; i++) {
-      for (let j = 0; j < n; j++) {
-        let card = [i + 1];
-        for (let k = 0; k < n; k++) card.push((n + 1) + k * n + (i * k + j) % n);
-        cards.push(card);
-      }
-    }
-    return cards;
-  }
-
-  // תבניות מיקומים עשירות כולל המרכז ומשחק גדלים דינמי
-  function getLayoutTemplates(count) {
-    let baseSlots = [];
-
-    if (count === 3) {
-      baseSlots = [
-        { top: 50, left: 50, baseSize: 95 }, // במרכז גדול מאוד
-        { top: 25, left: 30, baseSize: 70 },
-        { top: 72, left: 68, baseSize: 75 }
-      ];
-    } else if (count === 4) {
-      baseSlots = [
-        { top: 50, left: 50, baseSize: 85 }, // במרכז
-        { top: 22, left: 35, baseSize: 65 },
-        { top: 75, left: 30, baseSize: 70 },
-        { top: 55, left: 78, baseSize: 60 }
-      ];
-    } else if (count === 6) {
-      baseSlots = [
-        { top: 50, left: 50, baseSize: 78 }, // במרכז
-        { top: 22, left: 50, baseSize: 58 },
-        { top: 38, left: 20, baseSize: 65 },
-        { top: 78, left: 30, baseSize: 55 },
-        { top: 78, left: 70, baseSize: 60 },
-        { top: 38, left: 80, baseSize: 52 }
-      ];
-    } else { // 8 איורים לקלף
-      baseSlots = [
-        { top: 50, left: 50, baseSize: 72 }, // במרכז
-        { top: 20, left: 32, baseSize: 52 },
-        { top: 20, left: 68, baseSize: 48 },
-        { top: 48, left: 18, baseSize: 55 },
-        { top: 48, left: 82, baseSize: 48 },
-        { top: 78, left: 25, baseSize: 46 },
-        { top: 80, left: 55, baseSize: 54 },
-        { top: 72, left: 80, baseSize: 42 }
-      ];
-    }
-
-    // ערבוב המיקומים (Shuffle) כדי שכל קלף יראה שונה לחלוטין
-    const shuffledSlots = [...baseSlots].sort(() => Math.random() - 0.5);
-
-    // הוספת אקראיות קלה לגודל ולזווית לכל משבצת
-    return shuffledSlots.map(slot => {
-      const sizeVariation = Math.floor(Math.random() * 16) - 8; // שינוי גודל +-8px
-      const rot = Math.floor(Math.random() * 360);
-      return {
-        top: slot.top,
-        left: slot.left,
-        size: Math.max(35, slot.baseSize + sizeVariation),
-        rot: rot
-      };
-    });
-  }
-
-  function renderDeck(cardIndexesList, itemsPerCard, totalImages) {
-    const deckArea = document.getElementById('deckArea');
-    const infoSummary = document.getElementById('infoSummary');
-    const shape = document.getElementById('cardShape').value;
-    const bgColor = document.getElementById('cardBgColor').value;
-    const borderColor = document.getElementById('borderColor').value;
-    const mask = document.getElementById('maskStyle').value;
-
-    deckArea.innerHTML = '';
-
-    infoSummary.style.display = 'block';
-    infoSummary.innerHTML = `✨ נוצרו <strong>${cardIndexesList.length}</strong> קלפים! כל קלף מכיל <strong>${itemsPerCard}</strong> איורים. (בשימוש ${totalImages} תמונות מתוך ${uploadedFilesData.length} שהועלו).`;
-
-        cardIndexesList.forEach((cardSymbols) => {
-      const cardDiv = document.createElement('div');
-      cardDiv.className = `dobble-card ${shape}`;
-      cardDiv.style.backgroundColor = bgColor;
-      cardDiv.style.borderColor = borderColor;
-      
-      if (cardBackgroundSrc) {
-        cardDiv.style.backgroundImage = `url(${cardBackgroundSrc})`;
-        cardDiv.style.backgroundSize = 'cover';
-        cardDiv.style.backgroundPosition = 'center';
-      }
-
-      // יצירת סידור דינמי ומעורבב ייחודי לקלף הזה
-      const positions = getLayoutTemplates(itemsPerCard);
-
-      cardSymbols.forEach((symbolIdx, i) => {
-        if (symbolIdx < uploadedFilesData.length) {
-          const wrapper = document.createElement('div');
-          wrapper.className = 'symbol-wrapper';
-
-          const pos = positions[i];
-          wrapper.style.top = pos.top + '%';
-          wrapper.style.left = pos.left + '%';
-          wrapper.style.width = pos.size + 'px';
-          wrapper.style.height = pos.size + 'px';
-          wrapper.style.transform = `translate(-50%, -50%) rotate(${pos.rot}deg)`;
-
-          const img = document.createElement('img');
-          img.src = uploadedFilesData[symbolIdx].src;
-          img.className = `symbol-img ${mask}`;
-
-          wrapper.appendChild(img);
-          cardDiv.appendChild(wrapper);
+            fileInput.value = '';
         }
-      });
 
-      deckArea.appendChild(cardDiv);
-    });
-  }
+        function updateImagesUI() {
+            const grid = document.getElementById('imagesGrid');
+            const counter = document.getElementById('imagesCounter');
+            grid.innerHTML = '';
+            counter.textContent = `${uploadedFilesData.length} תמונות הועלו`;
 
-  function processAndGenerate() {
-    const totalCount = uploadedFilesData.length;
-    if (totalCount < 7) {
-      showToast('יש להעלות לפחות 7 תמונות (ליצירת 3 איורים בכל קלף)', 'error');
-      return;
-    }
+            uploadedFilesData.forEach((item) => {
+                const card = document.createElement('div');
+                card.className = 'image-item';
+                card.innerHTML = `
+            <img src="${item.src}" class="image-item-preview" alt="preview">
+            <span class="image-item-name" title="${item.name}">${item.name}</span>
+            <button class="btn-remove-img" onclick="removeImage('${item.id}')" title="הסר תמונה">🗑️</button>
+          `;
+                grid.appendChild(card);
+            });
+        }
 
-    showLoader(true, 'מחשב צירופים ומייצר קלפים... 🎯');
+        function removeImage(id) {
+            uploadedFilesData = uploadedFilesData.filter(item => item.id.toString() !== id.toString());
+            updateImagesUI();
+            showToast('התמונה הוסרה', 'info');
+        }
 
-    setTimeout(() => {
-      const n = getOrderN(totalCount);
-      if (n === 0) {
-        showToast('כמות התמונות אינה מספקת', 'error');
-        showLoader(false);
-        return;
-      }
+        function resetGame() {
+            uploadedFilesData = [];
+            cardBackgroundSrc = null;
+            document.getElementById('bgFileInput').value = '';
+            updateImagesUI();
+            document.getElementById('deckArea').innerHTML = '';
+            document.getElementById('infoSummary').style.display = 'none';
+            showToast('המשחק אופס בהצלחה! ניתן להתחיל מחדש', 'info');
+        }
 
-      const itemsPerCard = n + 1;
-      const totalRequiredImages = n * n + n + 1;
-      const cardIndexesList = generateProjectivePlaneIndexes(n);
+        function showLoader(show, message = 'מחשב צירופים ומייצר קלפים... 🎯') {
+            const loader = document.getElementById('loader');
+            const loaderText = document.getElementById('loaderText');
+            loaderText.textContent = message;
+            loader.style.display = show ? 'flex' : 'none';
+        }
 
-      renderDeck(cardIndexesList, itemsPerCard, totalRequiredImages);
-      showLoader(false);
-      showToast('הקלפים נוצרו בהצלחה!', 'success');
-    }, 500);
-  }
-</script>
+        function getOrderN(totalImages) {
+            if (totalImages >= 57) return 7;
+            if (totalImages >= 31) return 5;
+            if (totalImages >= 13) return 3;
+            if (totalImages >= 7) return 2;
+            return 0;
+        }
+
+        function generateProjectivePlaneIndexes(n) {
+            let cards = [];
+            let firstCard = [0];
+            for (let i = 0; i < n; i++) firstCard.push(i + 1);
+            cards.push(firstCard);
+
+            for (let j = 0; j < n; j++) {
+                let card = [0];
+                for (let k = 0; k < n; k++) card.push((n + 1) + j * n + k);
+                cards.push(card);
+            }
+
+            for (let i = 0; i < n; i++) {
+                for (let j = 0; j < n; j++) {
+                    let card = [i + 1];
+                    for (let k = 0; k < n; k++) card.push((n + 1) + k * n + (i * k + j) % n);
+                    cards.push(card);
+                }
+            }
+            return cards;
+        }
+
+        // תבניות מיקומים עשירות כולל המרכז ומשחק גדלים דינמי
+        function getLayoutTemplates(count) {
+            let baseSlots = [];
+
+            if (count === 3) {
+                baseSlots = [
+                    { top: 50, left: 50, baseSize: 95 }, // במרכז גדול מאוד
+                    { top: 25, left: 30, baseSize: 70 },
+                    { top: 72, left: 68, baseSize: 75 }
+                ];
+            } else if (count === 4) {
+                baseSlots = [
+                    { top: 50, left: 50, baseSize: 85 }, // במרכז
+                    { top: 22, left: 35, baseSize: 65 },
+                    { top: 75, left: 30, baseSize: 70 },
+                    { top: 55, left: 78, baseSize: 60 }
+                ];
+            } else if (count === 6) {
+                baseSlots = [
+                    { top: 50, left: 50, baseSize: 78 }, // במרכז
+                    { top: 22, left: 50, baseSize: 58 },
+                    { top: 38, left: 20, baseSize: 65 },
+                    { top: 78, left: 30, baseSize: 55 },
+                    { top: 78, left: 70, baseSize: 60 },
+                    { top: 38, left: 80, baseSize: 52 }
+                ];
+            } else { // 8 איורים לקלף
+                baseSlots = [
+                    { top: 50, left: 50, baseSize: 72 }, // במרכז
+                    { top: 20, left: 32, baseSize: 52 },
+                    { top: 20, left: 68, baseSize: 48 },
+                    { top: 48, left: 18, baseSize: 55 },
+                    { top: 48, left: 82, baseSize: 48 },
+                    { top: 78, left: 25, baseSize: 46 },
+                    { top: 80, left: 55, baseSize: 54 },
+                    { top: 72, left: 80, baseSize: 42 }
+                ];
+            }
+
+            // ערבוב המיקומים (Shuffle) כדי שכל קלף יראה שונה לחלוטין
+            const shuffledSlots = [...baseSlots].sort(() => Math.random() - 0.5);
+
+            // הוספת אקראיות קלה לגודל ולזווית לכל משבצת
+            return shuffledSlots.map(slot => {
+                const sizeVariation = Math.floor(Math.random() * 16) - 8; // שינוי גודל +-8px
+                const rot = Math.floor(Math.random() * 360);
+                return {
+                    top: slot.top,
+                    left: slot.left,
+                    size: Math.max(35, slot.baseSize + sizeVariation),
+                    rot: rot
+                };
+            });
+        }
+
+        function renderDeck(cardIndexesList, itemsPerCard, totalImages) {
+            const deckArea = document.getElementById('deckArea');
+            const infoSummary = document.getElementById('infoSummary');
+            const shape = document.getElementById('cardShape').value;
+            const bgColor = document.getElementById('cardBgColor').value;
+            const borderColor = document.getElementById('borderColor').value;
+            const mask = document.getElementById('maskStyle').value;
+
+            deckArea.innerHTML = '';
+
+            infoSummary.style.display = 'block';
+            infoSummary.innerHTML = `✨ נוצרו <strong>${cardIndexesList.length}</strong> קלפים! כל קלף מכיל <strong>${itemsPerCard}</strong> איורים. (בשימוש ${totalImages} תמונות מתוך ${uploadedFilesData.length} שהועלו).`;
+
+            cardIndexesList.forEach((cardSymbols) => {
+                const cardDiv = document.createElement('div');
+                cardDiv.className = `dobble-card ${shape}`;
+                cardDiv.style.backgroundColor = bgColor;
+                cardDiv.style.borderColor = borderColor;
+
+                if (cardBackgroundSrc) {
+                    cardDiv.style.backgroundImage = `url(${cardBackgroundSrc})`;
+                    cardDiv.style.backgroundSize = 'cover';
+                    cardDiv.style.backgroundPosition = 'center';
+                }
+
+                // יצירת סידור דינמי ומעורבב ייחודי לקלף הזה
+                const positions = getLayoutTemplates(itemsPerCard);
+
+                cardSymbols.forEach((symbolIdx, i) => {
+                    if (symbolIdx < uploadedFilesData.length) {
+                        const wrapper = document.createElement('div');
+                        wrapper.className = 'symbol-wrapper';
+
+                        const pos = positions[i];
+                        wrapper.style.top = pos.top + '%';
+                        wrapper.style.left = pos.left + '%';
+                        wrapper.style.width = pos.size + 'px';
+                        wrapper.style.height = pos.size + 'px';
+                        wrapper.style.transform = `translate(-50%, -50%) rotate(${pos.rot}deg)`;
+
+                        const img = document.createElement('img');
+                        img.src = uploadedFilesData[symbolIdx].src;
+                        img.className = `symbol-img ${mask}`;
+
+                        wrapper.appendChild(img);
+                        cardDiv.appendChild(wrapper);
+                    }
+                });
+
+                deckArea.appendChild(cardDiv);
+            });
+        }
+
+        function processAndGenerate() {
+            const totalCount = uploadedFilesData.length;
+            if (totalCount < 7) {
+                showToast('יש להעלות לפחות 7 תמונות (ליצירת 3 איורים בכל קלף)', 'error');
+                return;
+            }
+
+            showLoader(true, 'מחשב צירופים ומייצר קלפים... 🎯');
+
+            setTimeout(() => {
+                const n = getOrderN(totalCount);
+                if (n === 0) {
+                    showToast('כמות התמונות אינה מספקת', 'error');
+                    showLoader(false);
+                    return;
+                }
+
+                const itemsPerCard = n + 1;
+                const totalRequiredImages = n * n + n + 1;
+                const cardIndexesList = generateProjectivePlaneIndexes(n);
+
+                renderDeck(cardIndexesList, itemsPerCard, totalRequiredImages);
+                showLoader(false);
+                showToast('הקלפים נוצרו בהצלחה!', 'success');
+            }, 500);
+        }
+    </script>
 
 </body>
 </html>

@@ -312,7 +312,53 @@
     </style>
 </head>
 <body>
+    <!-- כפתור חזרה לדף הבית - קוד עצמאי -->
+    <style>
+        .home-nav-btn {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            z-index: 9999;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            background-color: #ffffff;
+            color: #2c3e50;
+            text-decoration: none;
+            font-family: system-ui, -apple-system, sans-serif;
+            font-size: 15px;
+            font-weight: 700;
+            padding: 10px 18px;
+            border-radius: 30px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.15);
+            border: 1px solid #e2e8f0;
+            transition: all 0.25s ease;
+            cursor: pointer;
+        }
 
+            .home-nav-btn:hover {
+                transform: translateY(-2px);
+                box-shadow: 0 6px 20px rgba(0, 0, 0, 0.2);
+                background-color: #f8fafc;
+                color: #2b6cb0;
+            }
+
+            .home-nav-btn .icon {
+                font-size: 18px;
+            }
+
+        /* הסתרת הכפתור בזמן הדפסה */
+        @media print {
+            .home-nav-btn {
+                display: none !important;
+            }
+        }
+    </style>
+
+    <a href="index.html" class="home-nav-btn" title="חזרה לדף המשחקים">
+        <span class="icon">🏠</span>
+        <span>למשחקים אחרים</span>
+    </a>
     <!-- ספינר טעינה -->
     <div class="loading-overlay" id="loadingOverlay">
         <div class="spinner"></div>
@@ -402,9 +448,9 @@
                 const container = document.createElement('div');
                 container.className = 'img-thumb-container';
                 container.innerHTML = `
-            <img src="${imgSrc}">
-            <button class="delete-btn" title="הסר תמונה" onclick="removeImage(${index})">🗑️</button>
-          `;
+                <img src="${imgSrc}">
+                <button class="delete-btn" title="הסר תמונה" onclick="removeImage(${index})">🗑️</button>
+              `;
                 grid.appendChild(container);
             });
         }
@@ -441,14 +487,14 @@
                         const imgB = loadedImages[j];
 
                         card.innerHTML = `
-                <div class="domino-half">
-                  <img src="${imgA}">
-                </div>
-                <div class="domino-divider"></div>
-                <div class="domino-half">
-                  <img src="${imgB}">
-                </div>
-              `;
+                    <div class="domino-half">
+                      <img src="${imgA}">
+                    </div>
+                    <div class="domino-divider"></div>
+                    <div class="domino-half">
+                      <img src="${imgB}">
+                    </div>
+                  `;
 
                         printArea.appendChild(card);
                     }
