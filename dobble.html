@@ -5,7 +5,8 @@
   <title>יוצר משחק דאבל אישי</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Assistant:wght@400;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Assistant:wght@400;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 
   <style>
     :root {
@@ -388,12 +389,41 @@
       background: transparent;
     }
 
+        .btn i {
+      margin-left: 8px;
+    }
+
+    .spin-on-hover:hover i {
+      animation: spin 2s linear infinite;
+    }
+
+    .always-spin i {
+      animation: spin 2s linear infinite;
+    }
+
+    .bg-upload-container {
+      margin-top: 10px;
+      padding: 10px;
+      background: #fff9db;
+      border-radius: 8px;
+      border: 1px solid #ffe066;
+    }
+
+    .bg-warning {
+      font-size: 11px;
+      color: #856404;
+      margin-top: 4px;
+      display: block;
+    }
+
     /* Mask Styles */
     .mask-none { clip-path: none; border-radius: 0; }
     .mask-circle { border-radius: 50%; }
     .mask-rounded { border-radius: 20%; }
     .mask-hexagon { clip-path: polygon(25% 0%, 75% 0%, 100% 50%, 75% 100%, 25% 100%, 0% 50%); }
     .mask-diamond { clip-path: polygon(50% 0%, 100% 50%, 50% 100%, 0% 50%); }
+    .mask-star { clip-path: polygon(50% 0%, 61% 35%, 98% 35%, 68% 57%, 79% 91%, 50% 70%, 21% 91%, 32% 57%, 2% 35%, 39% 35%); }
+    .mask-soft { -webkit-mask-image: radial-gradient(circle, black 40%, rgba(0,0,0,0) 95%); mask-image: radial-gradient(circle, black 40%, rgba(0,0,0,0) 95%); }
 
     @media print {
       .no-print { display: none !important; }
@@ -410,8 +440,8 @@
 <div class="toast-container" id="toastContainer"></div>
 
 <div class="container">
-  <div class="no-print">
-    <h1>🎯 יוצר משחק דאבל (Spot It!) אישי</h1>
+    <div class="no-print">
+    <h1>🎯 דאבל!</h1>
 
     <div class="app-layout">
       <!-- Main Creator Card -->
@@ -436,20 +466,28 @@
             <input type="color" id="borderColor" value="#2d3436">
           </div>
 
-          <div class="form-group">
+                    <div class="form-group">
             <label for="maskStyle">מסיכה / חיתוך לאיורים:</label>
             <select id="maskStyle">
-              <option value="mask-none">ללא חיתוך (PNG שקוף)</option>
+              <option value="mask-none">ללא חיתוך (מומלץ לתמונות ללא רקע בסיומת PNG)</option>
               <option value="mask-circle">עיגול</option>
               <option value="mask-rounded">פינות מעוגלות</option>
               <option value="mask-hexagon">משושה</option>
               <option value="mask-diamond">מעוין</option>
+              <option value="mask-star">כוכב</option>
+              <option value="mask-soft">גבולות רכים</option>
             </select>
           </div>
         </div>
 
-        <div class="bulk-drop-zone" id="bulkDropZone" onclick="document.getElementById('bulkFileInput').click()">
-          <p>🖼️ לחצו כאן או גררו תמונות להוספה</p>
+        <div class="bg-upload-container">
+          <label for="bgFileInput">🖼️ העלאת רקע לקלפים (אופציונלי):</label>
+          <input type="file" id="bgFileInput" accept="image/*">
+          <span class="bg-warning">💡 המלצה: לא כדאי לבחור רקע מקושקש מדי כדי שהאיורים יישארו בולטים.</span>
+        </div>
+
+        <div class="bulk-drop-zone spin-on-hover" id="bulkDropZone" onclick="document.getElementById('bulkFileInput').click()">
+          <p><i class="fas fa-cloud-upload-alt"></i> לחצו כאן או גררו תמונות להוספה</p>
           <span>ניתן להעלות תמונות בודדות או בבת אחת</span>
           <input type="file" id="bulkFileInput" accept="image/*" multiple style="display: none;">
         </div>
@@ -461,8 +499,8 @@
 
         <div class="images-grid" id="imagesGrid"></div>
 
-        <div class="actions-bar">
-          <button class="btn" onclick="processAndGenerate()">🎲 צור קלפי דאבל</button>
+                <div class="actions-bar">
+          <button class="btn spin-on-hover" onclick="processAndGenerate()"><i class="fas fa-cog"></i> צור קלפי דאבל</button>
           <button class="btn btn-reset" onclick="resetGame()">🔄 משחק חדש</button>
         </div>
       </div>
@@ -506,7 +544,7 @@
       </div>
     </div>
 
-    <button class="btn btn-print" onclick="window.print()">🖨️ הדפס / שמור כ-PDF</button>
+        <button class="btn btn-print spin-on-hover" onclick="window.print()"><i class="fas fa-file-pdf"></i> הדפס / שמור כ-PDF</button>
   </div>
 
   <div class="info-summary" id="infoSummary"></div>
@@ -522,9 +560,23 @@
 
 <script>
   let uploadedFilesData = [];
+  let cardBackgroundSrc = null;
 
   const dropZone = document.getElementById('bulkDropZone');
   const fileInput = document.getElementById('bulkFileInput');
+  const bgFileInput = document.getElementById('bgFileInput');
+
+  bgFileInput.addEventListener('change', (e) => {
+    const file = e.target.files[0];
+    if (file && file.type.startsWith('image/')) {
+      const reader = new FileReader();
+      reader.onload = (ev) => {
+        cardBackgroundSrc = ev.target.result;
+        showToast('רקע הקלפים עודכן!', 'success');
+      };
+      reader.readAsDataURL(file);
+    }
+  });
 
   function showToast(message, type = 'info') {
     const container = document.getElementById('toastContainer');
@@ -605,8 +657,10 @@
     showToast('התמונה הוסרה', 'info');
   }
 
-  function resetGame() {
+    function resetGame() {
     uploadedFilesData = [];
+    cardBackgroundSrc = null;
+    document.getElementById('bgFileInput').value = '';
     updateImagesUI();
     document.getElementById('deckArea').innerHTML = '';
     document.getElementById('infoSummary').style.display = 'none';
@@ -718,11 +772,17 @@
     infoSummary.style.display = 'block';
     infoSummary.innerHTML = `✨ נוצרו <strong>${cardIndexesList.length}</strong> קלפים! כל קלף מכיל <strong>${itemsPerCard}</strong> איורים. (בשימוש ${totalImages} תמונות מתוך ${uploadedFilesData.length} שהועלו).`;
 
-    cardIndexesList.forEach((cardSymbols) => {
+        cardIndexesList.forEach((cardSymbols) => {
       const cardDiv = document.createElement('div');
       cardDiv.className = `dobble-card ${shape}`;
       cardDiv.style.backgroundColor = bgColor;
       cardDiv.style.borderColor = borderColor;
+      
+      if (cardBackgroundSrc) {
+        cardDiv.style.backgroundImage = `url(${cardBackgroundSrc})`;
+        cardDiv.style.backgroundSize = 'cover';
+        cardDiv.style.backgroundPosition = 'center';
+      }
 
       // יצירת סידור דינמי ומעורבב ייחודי לקלף הזה
       const positions = getLayoutTemplates(itemsPerCard);
