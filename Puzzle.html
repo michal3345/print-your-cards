@@ -1,0 +1,638 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <title>מחולל פאזלים מותאם אישית 🧩</title>
+  <style>
+    :root {
+      --primary: #4a90e2;
+      --bg: #f5f7fa;
+      --main-font: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    }
+
+    * {
+      box-sizing: border-box;
+      font-family: var(--main-font);
+    }
+
+    body {
+      background-color: var(--bg);
+      margin: 0;
+      padding: 20px;
+      color: #333;
+    }
+
+    .container {
+      max-width: 1000px;
+      margin: 0 auto;
+    }
+
+    h1 {
+      text-align: center;
+      color: #2c3e50;
+    }
+
+    .creator-card {
+      background: white;
+      padding: 25px;
+      border-radius: 12px;
+      box-shadow: 0 4px 15px rgba(0,0,0,0.08);
+      margin-bottom: 30px;
+    }
+
+    .form-row {
+      display: flex;
+      gap: 15px;
+      flex-wrap: wrap;
+      margin-bottom: 15px;
+    }
+
+    .form-group {
+      flex: 1;
+      min-width: 200px;
+    }
+
+    label {
+      display: block;
+      font-weight: bold;
+      margin-bottom: 5px;
+    }
+
+    input[type="number"], input[type="color"], select, input[type="range"] {
+      width: 100%;
+      padding: 10px;
+      border: 1px solid #ccc;
+      border-radius: 6px;
+      font-size: 15px;
+      background: white;
+    }
+
+    input[type="color"] {
+      height: 45px;
+      cursor: pointer;
+      padding: 2px;
+    }
+
+    .upload-box {
+      border: 2px dashed #bbb;
+      padding: 20px;
+      text-align: center;
+      border-radius: 8px;
+      background: #fafafa;
+      cursor: pointer;
+      margin-bottom: 20px;
+    }
+
+    .upload-box:hover {
+      border-color: var(--primary);
+    }
+
+    .editor-wrapper {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      margin: 20px 0;
+    }
+
+    .preview-stage {
+      width: 350px;
+      height: 350px;
+      position: relative;
+      border: 2px dashed #ccc;
+      background: #eef2f5;
+      overflow: hidden;
+      cursor: grab;
+      user-select: none;
+    }
+
+    .preview-stage:active {
+      cursor: grabbing;
+    }
+
+    /* קונטיינר הצורה המסננת */
+    .shape-container {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      width: 100%;
+      height: 100%;
+      transform: translate(-50%, -50%);
+      pointer-events: none;
+    }
+
+    .image-clipper {
+      width: 100%;
+      height: 100%;
+      position: absolute;
+      top: 0;
+      left: 0;
+      overflow: hidden;
+    }
+
+    .movable-image {
+      position: absolute;
+      top: 0;
+      left: 0;
+      transform-origin: center center;
+      pointer-events: none;
+    }
+
+    .shape-overlay {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      pointer-events: none;
+    }
+
+    /* ידיות שינוי גודל בצדדים */
+    .resize-handle {
+      position: absolute;
+      background: #ffffff;
+      border: 2px solid var(--primary);
+      color: var(--primary);
+      font-weight: bold;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 12px;
+      border-radius: 50%;
+      width: 26px;
+      height: 26px;
+      z-index: 100;
+      user-select: none;
+      box-shadow: 0 2px 5px rgba(0,0,0,0.3);
+      pointer-events: auto;
+    }
+
+    .handle-n { top: -13px; left: calc(50% - 13px); cursor: ns-resize; }
+    .handle-s { bottom: -13px; left: calc(50% - 13px); cursor: ns-resize; }
+    .handle-e { right: -13px; top: calc(50% - 13px); cursor: ew-resize; }
+    .handle-w { left: -13px; top: calc(50% - 13px); cursor: ew-resize; }
+
+    .btn {
+      background: #27ae60;
+      color: white;
+      border: none;
+      padding: 12px 24px;
+      font-size: 16px;
+      font-weight: bold;
+      border-radius: 6px;
+      cursor: pointer;
+      width: 100%;
+      transition: background 0.2s;
+    }
+
+    .btn:hover {
+      background: #219150;
+    }
+
+    .btn-print {
+      background: #2980b9;
+      margin-top: 15px;
+    }
+
+    .puzzle-result-card {
+      background: white;
+      padding: 20px;
+      border-radius: 12px;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+      margin-top: 25px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    .saved-puzzle-container {
+      width: 350px;
+      height: 350px;
+      position: relative;
+      background: white;
+      overflow: hidden;
+    }
+
+    @media print {
+      .no-print { display: none !important; }
+      body { background: white; padding: 0; }
+      .puzzle-result-card { box-shadow: none; padding: 0; }
+    }
+  </style>
+</head>
+<body>
+
+  <div class="container">
+    <div class="no-print">
+      <h1>יוצר הפאזלים האישי 🧩</h1>
+
+      <div class="creator-card">
+        <!-- 1. העלאת תמונה -->
+        <div class="upload-box" onclick="document.getElementById('imageLoader').click()">
+          <span id="uploadText">📷 לחץ כאן להעלאת תמונה אחת לפאזל</span>
+          <input type="file" id="imageLoader" accept="image/*" style="display:none" onchange="loadImage(event)">
+        </div>
+
+        <!-- 2. הגדרות צורה ומסגרת חיצונית -->
+        <div class="form-row">
+          <div class="form-group">
+            <label for="shapeSelect">בחירת צורת הפאזל:</label>
+            <select id="shapeSelect" onchange="updatePuzzleDisplay()">
+              <option value="circle">1. עיגול</option>
+              <option value="square">2. ריבוע</option>
+              <option value="heart">3. לב ❤️</option>
+              <option value="cloud">4. ענן ☁️</option>
+              <option value="arrow">5. חץ ➔</option>
+              <option value="star">6. כוכב ⭐</option>
+              <option value="shield">7. מגן 🛡️</option>
+              <option value="diamond">8. יהלום 💎</option>
+              <option value="hexagon">9. משושה</option>
+              <option value="octagon">10. מתומן</option>
+              <option value="egg">11. ביצה / אליפסה</option>
+              <option value="triangle">12. משולש</option>
+              <option value="drop">13. טיפה 💧</option>
+              <option value="flower">14. פרח 🌸</option>
+              <option value="badge">15. תג / מדליה 🏅</option>
+              <option value="cross">16. פלוס / צלב ➕</option>
+              <option value="crescent">17. סהר 🌙</option>
+              <option value="trapezium">18. טרפז</option>
+              <option value="house">19. בית 🏠</option>
+              <option value="tag">20. תווית 🏷️</option>
+            </select>
+          </div>
+
+          <div class="form-group">
+            <label for="borderColor">צבע מסגרת חיצונית:</label>
+            <input type="color" id="borderColor" value="#2c3e50" onchange="updatePuzzleDisplay()">
+          </div>
+
+          <div class="form-group">
+            <label for="borderWidth">עובי מסגרת (px):</label>
+            <input type="number" id="borderWidth" value="3" min="0" max="15" step="0.1" onchange="updatePuzzleDisplay()">
+          </div>
+        </div>
+
+        <!-- 3. הגדרות חלוקה וקווי חיתוך -->
+        <div class="form-row">
+          <div class="form-group">
+            <label for="gridPieces">כמות חלקים:</label>
+            <select id="gridPieces" onchange="updatePuzzleDisplay()">
+              <option value="2">2 חלקים (1x2)</option>
+              <option value="4" selected>4 חלקים (2x2)</option>
+              <option value="6">6 חלקים (2x3)</option>
+              <option value="9">9 חלקים (3x3)</option>
+              <option value="12">12 חלקים (3x4)</option>
+              <option value="16">16 חלקים (4x4)</option>
+            </select>
+          </div>
+
+          <div class="form-group">
+            <label for="cutStyle">סגנון קו החיתוך:</label>
+            <select id="cutStyle" onchange="updatePuzzleDisplay()">
+              <option value="puzzle">פאזל קלאסי</option>
+              <option value="straight">קו ישר</option>
+              <option value="wavy">קו מעוגל (גלי)</option>
+              <option value="zigzag">זיגזג</option>
+            </select>
+          </div>
+
+          <div class="form-group">
+            <label for="cutColor">צבע קו החיתוך:</label>
+            <input type="color" id="cutColor" value="#000000" onchange="updatePuzzleDisplay()">
+          </div>
+
+          <div class="form-group">
+            <label for="cutWidth">עובי קו חיתוך (px):</label>
+            <input type="number" id="cutWidth" value="1.5" min="0" max="10" step="0.1" onchange="updatePuzzleDisplay()">
+          </div>
+        </div>
+
+        <!-- 4. כלי הזזה וזום -->
+        <div class="form-row" id="controlsRow" style="display:none;">
+          <div class="form-group">
+            <label>גודל תמונה (Zoom):</label>
+            <!-- סרגל זום מורחב שמאפשר להקטין הרבה יותר (מ-0.05) -->
+            <input type="range" id="zoomRange" min="0.05" max="3" step="0.01" value="1" oninput="onZoomChange()">
+          </div>
+          <div class="form-group" style="align-self: flex-end;">
+            <small style="color:#666;">💡 גלילת העכבר / גרירה מזיזה את התמונה. החצים מקטינים ומגדילים את המסגרת.</small>
+          </div>
+        </div>
+
+        <!-- אזור העריכה והתצוגה -->
+        <div class="editor-wrapper" id="editorArea" style="display:none;">
+          <div class="preview-stage" id="stage" onmousedown="startDrag(event)" onmousemove="drag(event)" onmouseup="endDrag()" onmouseleave="endDrag()" ontouchstart="startDrag(event)" ontouchmove="drag(event)" ontouchend="endDrag()">
+            
+            <div class="shape-container" id="shapeContainer">
+              <!-- חיתוך התמונה לפי הצורה -->
+              <div class="image-clipper" id="imageClipper">
+                <img id="movableImg" class="movable-image" src="" alt="תמונה">
+              </div>
+
+              <!-- קווי החיתוך והמסגרת מעל התמונה -->
+              <svg id="svgOverlay" class="shape-overlay" viewBox="0 0 100 100" preserveAspectRatio="none"></svg>
+
+              <!-- חצי הגדלה והקטנה (Resize) -->
+              <div class="resize-handle handle-n" onmousedown="startResize(event, 'n')" ontouchstart="startResize(event, 'n')">▲</div>
+              <div class="resize-handle handle-s" onmousedown="startResize(event, 's')" ontouchstart="startResize(event, 's')">▼</div>
+              <div class="resize-handle handle-e" onmousedown="startResize(event, 'e')" ontouchstart="startResize(event, 'e')">►</div>
+              <div class="resize-handle handle-w" onmousedown="startResize(event, 'w')" ontouchstart="startResize(event, 'w')">◄</div>
+            </div>
+
+          </div>
+        </div>
+
+        <button class="btn" onclick="savePuzzle()">💾 שמור ואשר פאזל</button>
+      </div>
+    </div>
+
+    <!-- אזור הצגת הפאזל השמור -->
+    <div id="outputArea"></div>
+  </div>
+
+  <!-- SVG נסתר ליצירת Clip-Path דינמי עבור החיתוך -->
+  <svg width="0" height="0" style="position:absolute;">
+    <defs>
+      <clipPath id="mainClipPath" clipPathUnits="objectBoundingBox">
+        <path id="clipPathData" d="" />
+      </clipPath>
+    </defs>
+  </svg>
+
+  <script>
+    let imgLoaded = false;
+    let imgState = { x: 0, y: 0, scale: 1 };
+    let isDragging = false;
+    let dragStart = { x: 0, y: 0 };
+
+    let shapeScale = { w: 100, h: 100 };
+    let isResizing = false;
+    let resizeDir = '';
+    let resizeStart = { x: 0, y: 0, w: 100, h: 100 };
+
+    const SHAPES_PATH = {
+      circle: "M 50 0 A 50 50 0 1 1 49.9 0 Z",
+      square: "M 2 2 L 98 2 L 98 98 L 2 98 Z",
+      heart: "M 50 25 C 60 -10, 100 15, 50 95 C 0 15, 40 -10, 50 25 Z",
+      cloud: "M 20 60 A 20 20 0 0 1 40 30 A 25 25 0 0 1 85 40 A 15 15 0 0 1 80 70 Z",
+      arrow: "M 10 35 L 50 35 L 50 10 L 90 50 L 50 90 L 50 65 L 10 65 Z",
+      star: "M 50 0 L 63 35 L 100 38 L 72 63 L 80 100 L 50 80 L 20 100 L 28 63 L 0 38 L 37 35 Z",
+      shield: "M 50 0 C 80 0, 100 10, 100 35 C 100 70, 65 90, 50 100 C 35 90, 0 70, 0 35 C 0 10, 20 0, 50 0 Z",
+      diamond: "M 50 0 L 100 50 L 50 100 L 0 50 Z",
+      hexagon: "M 25 0 L 75 0 L 100 50 L 75 100 L 25 100 L 0 50 Z",
+      octagon: "M 30 0 L 70 0 L 100 30 L 100 70 L 70 100 L 30 100 L 0 70 L 0 30 Z",
+      egg: "M 50 0 C 85 0, 95 45, 95 70 C 95 90, 75 100, 50 100 C 25 100, 5 90, 5 70 C 5 45, 15 0, 50 0 Z",
+      triangle: "M 50 2 L 98 95 L 2 95 Z",
+      drop: "M 50 0 C 50 0, 95 60, 95 75 A 45 45 0 0 1 5 75 C 5 60, 50 0, 50 0 Z",
+      flower: "M 50 20 A 15 15 0 0 1 70 30 A 15 15 0 0 1 80 50 A 15 15 0 0 1 70 70 A 15 15 0 0 1 50 80 A 15 15 0 0 1 30 70 A 15 15 0 0 1 20 50 A 15 15 0 0 1 30 30 A 15 15 0 0 1 50 20 Z",
+      badge: "M 30 0 L 70 0 L 80 20 L 100 30 L 90 70 L 100 90 L 70 100 L 50 85 L 30 100 L 0 90 L 10 70 L 0 30 L 20 20 Z",
+      cross: "M 35 0 L 65 0 L 65 35 L 100 35 L 100 65 L 65 65 L 65 100 L 35 100 L 35 65 L 0 65 L 0 35 L 35 35 Z",
+      crescent: "M 60 0 A 50 50 0 1 0 100 70 A 40 40 0 1 1 60 0 Z",
+      trapezium: "M 20 10 L 80 10 L 100 90 L 0 90 Z",
+      house: "M 50 0 L 100 40 L 85 40 L 85 100 L 15 100 L 15 40 L 0 40 Z",
+      tag: "M 0 0 L 70 0 L 100 50 L 70 100 L 0 100 Z"
+    };
+
+    function loadImage(e) {
+      const file = e.target.files[0];
+      if (!file) return;
+
+      const reader = new FileReader();
+      reader.onload = function(evt) {
+        const img = document.getElementById('movableImg');
+        img.src = evt.target.result;
+        img.onload = function() {
+          imgLoaded = true;
+          document.getElementById('uploadText').innerText = "✓ תמונה הועלתה בהצלחה! לחץ להחלפה";
+          document.getElementById('editorArea').style.display = 'flex';
+          document.getElementById('controlsRow').style.display = 'flex';
+          
+          imgState = { x: 0, y: 0, scale: 1 };
+          shapeScale = { w: 100, h: 100 };
+          document.getElementById('zoomRange').value = 1;
+          applyImgTransform();
+          applyShapeSize();
+          updatePuzzleDisplay();
+        };
+      };
+      reader.readAsDataURL(file);
+    }
+
+    // גרירת תמונה
+    function startDrag(e) {
+      if (!imgLoaded || isResizing) return;
+      isDragging = true;
+      const clientX = e.touches ? e.touches[0].clientX : e.clientX;
+      const clientY = e.touches ? e.touches[0].clientY : e.clientY;
+      dragStart = { x: clientX - imgState.x, y: clientY - imgState.y };
+    }
+
+    function drag(e) {
+      if (isResizing) {
+        doResize(e);
+        return;
+      }
+      if (!isDragging) return;
+      e.preventDefault();
+      const clientX = e.touches ? e.touches[0].clientX : e.clientX;
+      const clientY = e.touches ? e.touches[0].clientY : e.clientY;
+      imgState.x = clientX - dragStart.x;
+      imgState.y = clientY - dragStart.y;
+      applyImgTransform();
+    }
+
+    function endDrag() {
+      isDragging = false;
+      isResizing = false;
+    }
+
+    // הגדלה/הקטנה באמצעות החצים
+    function startResize(e, dir) {
+      e.stopPropagation();
+      e.preventDefault();
+      isResizing = true;
+      resizeDir = dir;
+      const clientX = e.touches ? e.touches[0].clientX : e.clientX;
+      const clientY = e.touches ? e.touches[0].clientY : e.clientY;
+      resizeStart = { x: clientX, y: clientY, w: shapeScale.w, h: shapeScale.h };
+
+      window.addEventListener('mousemove', doResize);
+      window.addEventListener('mouseup', stopResize);
+      window.addEventListener('touchmove', doResize);
+      window.addEventListener('touchend', stopResize);
+    }
+
+    function doResize(e) {
+      if (!isResizing) return;
+      const clientX = e.touches ? e.touches[0].clientX : e.clientX;
+      const clientY = e.touches ? e.touches[0].clientY : e.clientY;
+      
+      const deltaX = (clientX - resizeStart.x) / 3.5;
+      const deltaY = (clientY - resizeStart.y) / 3.5;
+
+      if (resizeDir === 'e') shapeScale.w = Math.max(20, Math.min(100, resizeStart.w + deltaX));
+      if (resizeDir === 'w') shapeScale.w = Math.max(20, Math.min(100, resizeStart.w - deltaX));
+      if (resizeDir === 's') shapeScale.h = Math.max(20, Math.min(100, resizeStart.h + deltaY));
+      if (resizeDir === 'n') shapeScale.h = Math.max(20, Math.min(100, resizeStart.h - deltaY));
+
+      applyShapeSize();
+    }
+
+    function stopResize() {
+      isResizing = false;
+      window.removeEventListener('mousemove', doResize);
+      window.removeEventListener('mouseup', stopResize);
+      window.removeEventListener('touchmove', doResize);
+      window.removeEventListener('touchend', stopResize);
+    }
+
+    function applyShapeSize() {
+      const container = document.getElementById('shapeContainer');
+      container.style.width = shapeScale.w + '%';
+      container.style.height = shapeScale.h + '%';
+    }
+
+    function onZoomChange() {
+      imgState.scale = parseFloat(document.getElementById('zoomRange').value);
+      applyImgTransform();
+    }
+
+    function applyImgTransform() {
+      const img = document.getElementById('movableImg');
+      img.style.transform = `translate(${imgState.x}px, ${imgState.y}px) scale(${imgState.scale})`;
+    }
+
+    // יצירת מפתח נתיבי החיתוך בפאזל (קלאסי / ישר / גלי / זיגזג)
+    function generateGridPaths(pieces, style) {
+      let paths = [];
+      let rows = 2, cols = 2;
+
+      if (pieces == 2) { rows = 1; cols = 2; }
+      else if (pieces == 4) { rows = 2; cols = 2; }
+      else if (pieces == 6) { rows = 2; cols = 3; }
+      else if (pieces == 9) { rows = 3; cols = 3; }
+      else if (pieces == 12) { rows = 3; cols = 4; }
+      else if (pieces == 16) { rows = 4; cols = 4; }
+
+      // אנכי
+      for (let c = 1; c < cols; c++) {
+        let x = (100 / cols) * c;
+        for (let r = 0; r < rows; r++) {
+          let y1 = (100 / rows) * r;
+          let y2 = (100 / rows) * (r + 1);
+          let flip = (c + r) % 2 === 0 ? 1 : -1;
+          paths.push(createDividerSegment(x, y1, x, y2, style, true, flip));
+        }
+      }
+      // אופקי
+      for (let r = 1; r < rows; r++) {
+        let y = (100 / rows) * r;
+        for (let c = 0; c < cols; c++) {
+          let x1 = (100 / cols) * c;
+          let x2 = (100 / cols) * (c + 1);
+          let flip = (c + r) % 2 === 0 ? 1 : -1;
+          paths.push(createDividerSegment(x1, y, x2, y, style, false, flip));
+        }
+      }
+
+      return paths.join(' ');
+    }
+
+    function createDividerSegment(x1, y1, x2, y2, style, isVertical, flip) {
+      if (style === 'straight') {
+        return `M ${x1} ${y1} L ${x2} ${y2}`;
+      } else if (style === 'wavy') {
+        let midX = (x1 + x2) / 2 + (isVertical ? 6 * flip : 0);
+        let midY = (y1 + y2) / 2 + (!isVertical ? 6 * flip : 0);
+        return `M ${x1} ${y1} Q ${midX} ${midY} ${x2} ${y2}`;
+      } else if (style === 'zigzag') {
+        let offset = 5 * flip;
+        return isVertical
+          ? `M ${x1} ${y1} L ${x1 - offset} ${(y1*2+y2)/3} L ${x1 + offset} ${(y1+y2*2)/3} L ${x2} ${y2}`
+          : `M ${x1} ${y1} L ${(x1*2+x2)/3} ${y1 - offset} L ${(x1+x2*2)/3} ${y1 + offset} L ${x2} ${y2}`;
+      } else { 
+        // פאזל קלאסי תקני (זכר/נקבה)
+        if (isVertical) {
+          let len = y2 - y1;
+          let p1 = y1 + len * 0.38;
+          let p2 = y1 + len * 0.62;
+          let tabDepth = 6 * flip;
+          return `M ${x1} ${y1} L ${x1} ${p1} C ${x1 - tabDepth} ${p1 - 2}, ${x1 - tabDepth} ${p2 + 2}, ${x1} ${p2} L ${x2} ${y2}`;
+        } else {
+          let len = x2 - x1;
+          let p1 = x1 + len * 0.38;
+          let p2 = x1 + len * 0.62;
+          let tabDepth = 6 * flip;
+          return `M ${x1} ${y1} L ${p1} ${y1} C ${p1 - 2} ${y1 - tabDepth}, ${p2 + 2} ${y1 - tabDepth}, ${p2} ${y1} L ${x2} ${y2}`;
+        }
+      }
+    }
+
+    function updatePuzzleDisplay() {
+      const shapeKey = document.getElementById('shapeSelect').value;
+      const borderColor = document.getElementById('borderColor').value;
+      const borderWidth = parseFloat(document.getElementById('borderWidth').value) || 0;
+      
+      const cutColor = document.getElementById('cutColor').value;
+      const cutWidth = parseFloat(document.getElementById('cutWidth').value) || 0;
+      
+      const pieces = document.getElementById('gridPieces').value;
+      const cutStyle = document.getElementById('cutStyle').value;
+
+      const shapePathD = SHAPES_PATH[shapeKey] || SHAPES_PATH.circle;
+      const gridPathD = generateGridPaths(pieces, cutStyle);
+
+      // עדכון ClipPath לתמונה (ממיר נתיב מ-0..100 ל-0..1 עבור CSS clip-path)
+      const normalizedPath = scalePathToUnit(shapePathD);
+      document.getElementById('clipPathData').setAttribute('d', normalizedPath);
+      document.getElementById('imageClipper').style.clipPath = 'url(#mainClipPath)';
+
+      // עדכון שכבת ה-SVG מעל התמונה
+      const svg = document.getElementById('svgOverlay');
+      svg.innerHTML = `
+        <!-- קווי חיתוך פנימיים -->
+        <path d="${gridPathD}" fill="none" stroke="${cutColor}" stroke-width="${cutWidth}" vector-effect="non-scaling-stroke" />
+
+        <!-- מסגרת בצורה שנבחרה -->
+        <path d="${shapePathD}" fill="none" stroke="${borderColor}" stroke-width="${borderWidth}" vector-effect="non-scaling-stroke" />
+      `;
+    }
+
+    // המרת ערכי SVG של 0..100 לטווח יחסי 0..1 עבור clipPath
+    function scalePathToUnit(d) {
+      return d.replace(/(-?\d+\.?\d*)/g, function(match) {
+        let val = parseFloat(match);
+        return (val / 100).toFixed(4);
+      });
+    }
+
+    function savePuzzle() {
+      if (!imgLoaded) {
+        alert("אנא העלה תמונה תחילה!");
+        return;
+      }
+
+      const container = document.getElementById('shapeContainer');
+      const clone = container.cloneNode(true);
+      
+      // הסרת ידיות Resize מהתוצאה הסופית
+      const handles = clone.querySelectorAll('.resize-handle');
+      handles.forEach(h => h.remove());
+
+      const resultCard = document.createElement('div');
+      resultCard.className = 'puzzle-result-card';
+      resultCard.innerHTML = `
+        <h3 class="no-print">🧩 הפאזל המוכן שלך</h3>
+        <div class="saved-puzzle-container">
+          ${clone.outerHTML}
+        </div>
+        <button class="btn btn-print no-print" onclick="window.print()">🖨️ הדפס פאזל</button>
+      `;
+
+      const output = document.getElementById('outputArea');
+      output.innerHTML = '';
+      output.appendChild(resultCard);
+      resultCard.scrollIntoView({ behavior: 'smooth' });
+    }
+  </script>
+</body>
+</html>
